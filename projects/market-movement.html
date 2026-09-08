@@ -30,7 +30,7 @@
 <header class="case-head">
   <div class="wrap">
     <a class="back" href="../index.html#work">&larr; All work</a>
-    <span class="tag tag-progress" style="display:inline-block;margin-bottom:16px">In progress &middot; dashboard shipping Sept 2026</span>
+    <span class="tag tag-live" style="display:inline-block;margin-bottom:16px">Complete</span>
     <h1>Does the Market Know Something?</h1>
     <p class="lede">
       Seven seasons of Premier League prices from 16 bookmakers, stripped of the margin they have
@@ -114,6 +114,21 @@
       </div>
 
       <p>
+        Splitting it into two groups understates the case. If the effect is real then the size of the
+        move should matter, not just its direction, and it does:
+      </p>
+
+      <figure class="figure">
+        <img src="../assets/img/epl/01-movement.png" alt="Bar chart showing a monotonic gradient from minus 8.6 points for heavily drifted selections to plus 8.5 for heavily steamed ones" loading="lazy">
+        <figcaption>
+          The gradient runs cleanly from &minus;8.6 points to +8.5 across seven buckets, strictly
+          increasing at every step. Selections that barely moved land at +0.8, almost exactly where
+          they should. A dose response like this is much harder to explain away than a single split,
+          because noise does not usually arrange itself in order.
+        </figcaption>
+      </figure>
+
+      <p>
         The reason I believe that isn't the size of the number by itself. It's that the same number
         shows up independently across books that set their prices separately:
       </p>
@@ -130,6 +145,14 @@
           </tbody>
         </table>
       </div>
+      <figure class="figure">
+        <img src="../assets/img/epl/02-replication.png" alt="Edge on steamed selections measured at four independent price sources, all near plus 3.4 points" loading="lazy">
+        <figcaption>
+          The same measurement taken at four sources that set their prices separately, with 95%
+          intervals. They agree to within a fifth of a point.
+        </figcaption>
+      </figure>
+
       <p>Three further results came out of the same pipeline:</p>
       <ul>
         <li><strong>Favourite and longshot bias survives devigging.</strong> Even once the margin is
@@ -146,6 +169,23 @@
             growing from six to nine. A metric whose composition changes underneath it isn't showing
             you a trend, it's showing you a change in bookkeeping.</li>
       </ul>
+
+      <figure class="figure">
+        <img src="../assets/img/epl/03-calibration.png" alt="Calibration curve of closing devigged probability against actual win rate, bending away from the diagonal at both ends" loading="lazy">
+        <figcaption>
+          The calibration curve. If the market were perfectly right after removing its margin, every
+          point would sit on the dashed line. Longshots fall below it and heavy favourites sit above,
+          which is the favourite and longshot bias surviving the devig.
+        </figcaption>
+      </figure>
+
+      <figure class="figure">
+        <img src="../assets/img/epl/04-benchmark.png" alt="Two lines showing Bet365 margin flat across seven seasons while the market average climbs as more books are added" loading="lazy">
+        <figcaption>
+          The trap. The market average margin appears to climb while Bet365's own margin is flat.
+          The entire movement is the number of books being averaged growing from six to nine.
+        </figcaption>
+      </figure>
     </section>
 
     <section>
@@ -157,9 +197,10 @@
         finding above is computed and checked.
       </p>
       <p>
-        What is still in flight is the Tableau Public dashboard that presents all of it, which I am
-        building now and which this page will link to once it ships. I'm learning Tableau on this
-        project rather than learning it separately and then coming back.
+        A Tableau Public version of these charts is the next thing I am building on this project. It
+        will not add a finding, since everything above is already computed and checked, but Tableau is
+        the tool most analyst roles actually use and I would rather learn it on data I understand than
+        on a sample workbook.
       </p>
     </section>
 
