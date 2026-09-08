@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditing My Own Analysis | Max Nudelman</title>
+<meta name="description" content="I published a volleyball analysis with an impossible metric in it and a circular conclusion. Here is how I found both and rebuilt the work.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="nav-name" href="../index.html">Max Nudelman</a>
+    <div class="nav-links">
+      <a href="../index.html#work">Work</a>
+      <a href="../index.html#experience">Experience</a>
+      <a class="cta" href="../index.html#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="case-head">
+  <div class="wrap">
+    <a class="back" href="../index.html#work">&larr; All work</a>
+    <span class="tag tag-live" style="display:inline-block;margin-bottom:16px">Complete</span>
+    <h1>Auditing My Own Analysis</h1>
+    <p class="lede">
+      I wrote a volleyball statistics analysis for a class, published it, and later found that one of
+      its central metrics was mathematically impossible and one of its main conclusions was circular.
+      This is how I found both problems and what the data actually says once they are fixed.
+    </p>
+
+    <div class="factsheet">
+      <div class="fact"><div class="lab">Role</div><div class="val">Solo project</div></div>
+      <div class="fact"><div class="lab">Stack</div><div class="val">R (tidyverse, ggplot2)</div></div>
+      <div class="fact"><div class="lab">Data</div><div class="val">Volleyball Nations League 2025</div></div>
+      <div class="fact"><div class="lab">Scale</div><div class="val">305 players, 18 national teams</div></div>
+    </div>
+
+    <div class="hero-actions" style="margin-top:30px">
+      <a class="btn" href="https://github.com/Max-Nudelman/vnl-2025-analysis" target="_blank" rel="noopener">View the code on GitHub</a>
+    </div>
+  </div>
+</header>
+
+<div class="case-body">
+  <div class="wrap">
+
+    <section>
+      <h2>Why this project is here</h2>
+      <p>
+        Every other project on this site is work I did carefully from the start. This one is
+        different, and I am including it deliberately. The original version of this analysis went out
+        with real errors in it, and I would rather show what I did about that than quietly delete the
+        file.
+      </p>
+      <p>
+        The reason is that finding the mistake is the part of the job that actually matters. Anyone
+        can produce a chart. Being the person who checks whether the numbers are possible before
+        anyone else does is the difference between an analyst you can trust and one you cannot.
+      </p>
+    </section>
+
+    <section>
+      <h2>Problem one: a metric that could not exist</h2>
+      <p>
+        The original analysis computed attack efficiency as
+        <code>(Attack Points &minus; Attack Errors) / Attack Attempts</code>, which looks completely
+        reasonable. It produced values above 1.0 for 36 players, with a maximum of 2.83. A player
+        cannot score more kills than the number of attacks they took, so those numbers were not just
+        high, they were impossible.
+      </p>
+      <p>
+        The cause was in the source data rather than my arithmetic. The official FIVB attack table has
+        three columns, <strong>Point</strong>, <strong>Fault</strong> and <strong>Shot</strong>, where
+        Shot means an attack that was dug and stayed in play. The dataset I used had relabelled Shot
+        as &ldquo;Attack Attempts&rdquo;. I had been dividing by only the attacks that came back,
+        which is a much smaller number than the real total.
+      </p>
+      <p>The correct denominator is Points plus Errors plus Shots:</p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Attack efficiency across 102 players with 50 or more attacks</caption>
+          <thead><tr><th>Denominator</th><th class="num">min</th><th class="num">median</th><th class="num">max</th><th class="num">impossible (&gt;1.0)</th></tr></thead>
+          <tbody>
+            <tr><td>Original</td><td class="num">0.25</td><td class="num">0.87</td><td class="num">2.83</td><td class="num">36</td></tr>
+            <tr><td>Corrected</td><td class="num">0.12</td><td class="num"><strong>0.33</strong></td><td class="num">0.65</td><td class="num"><strong>0</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Elite international attack efficiency runs roughly 0.25 to 0.40, so a median of 0.33 is where
+        it should be.
+      </p>
+
+      <div class="note">
+        <p><strong>The part worth remembering.</strong> Reception has a column with the same name and
+        it does <em>not</em> have this problem, because there &ldquo;Receive Attempts&rdquo; genuinely
+        is the total. If I had pattern matched and applied the same fix to all three skills, I would
+        have broken the one that was already correct. The same word meant different things in
+        different tables of one file, and the only way to tell was checking each result against a
+        range I knew from the sport.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Problem two: the sample sizes were doing the talking</h2>
+      <p>
+        The original treated all 305 players equally. But a rate computed on three attempts is not
+        really a measurement, and the data shows exactly how much that matters.
+      </p>
+
+      <figure class="figure">
+        <img src="../assets/img/vnl/01-small-samples.png" alt="Attack efficiency spread by number of attacks taken, showing variance collapsing as sample size grows">
+        <figcaption>
+          Standard deviation falls from 0.44 among players with ten or fewer attacks to 0.07 among
+          those with more than a hundred. Those groups do not differ in skill by a factor of seven.
+          Almost all of that spread is sample size.
+        </figcaption>
+      </figure>
+
+      <p>
+        So everything downstream uses a minimum of 50 attacks, which keeps 102 of the 305 players.
+        That threshold is the same question I am asking in my
+        <a href="stake-factor.html">Stake Factor</a> project, which is how many observations you need
+        before a number means anything. Different sport, identical statistics.
+      </p>
+    </section>
+
+    <section>
+      <h2>Problem three: the main conclusion was circular</h2>
+      <p>
+        The original built a Player Score by summing counting stats, roughly
+        <code>Attack Points &minus; Attack Errors + Block Points &minus; Block Errors + Serve Points
+        &minus; Serve Errors + Successful Receives + Spike Digs</code>. It then correlated those same
+        stats against that score and reported the strongest ones as the stats that matter most.
+      </p>
+      <p>
+        That cannot work. Those stats <em>are</em> the score, so a strong correlation is arithmetic
+        rather than evidence. I would have got the same answer from random numbers summed the same
+        way.
+      </p>
+      <div class="finding">
+        <p>
+          The giveaway was in my own results. <strong>Receive Errors correlated +0.57 with the score
+          and Attack Errors +0.42.</strong> Making more mistakes predicted a higher rating. That only
+          happens when what you are really measuring is how much someone played.
+        </p>
+      </div>
+      <p>
+        The fix is to score each stat against a total rebuilt <em>without</em> that stat, so the
+        arithmetic guarantee is gone.
+      </p>
+
+      <figure class="figure">
+        <img src="../assets/img/vnl/02-circularity.png" alt="Comparison of circular and leave one out correlations for each component stat">
+        <figcaption>
+          Attack Points falls from 0.73 to &minus;0.07 once it is removed from the total it was being
+          measured against. Essentially all of its apparent importance was definitional. Spike Digs
+          survives at 0.70, so that one was carrying real information.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>What the data actually says</h2>
+      <p>
+        Once the circularity is removed, the more interesting result is not which stat wins. It is
+        that the whole idea of a single score is wrong.
+      </p>
+
+      <figure class="figure">
+        <img src="../assets/img/vnl/03-two-axes.png" alt="Scatter of attack efficiency against reception efficiency by playing role, showing no relationship">
+        <figcaption>
+          Attacking output and reception quality are close to unrelated across players. Summing them
+          into one number forces two independent skills onto one axis, which is why the original
+          ranking could never fairly compare a libero to an opposite.
+        </figcaption>
+      </figure>
+
+      <p>
+        Checking the rate statistics against final tournament position, which was decided on the court
+        and owes nothing to any formula of mine, gives one clear result:
+      </p>
+
+      <figure class="figure">
+        <img src="../assets/img/vnl/04-serve-risk.png" alt="Team ace rate and serve error rate plotted against final tournament finish">
+        <figcaption>
+          Ace rate barely tracks where a team finished, at r = &minus;0.02. Serve error rate does, at
+          r = +0.49. The median elite server lands 6.2% aces against 20.6% errors, so on average
+          aggression on serve costs more than it earns.
+        </figcaption>
+      </figure>
+
+      <p>
+        Reception efficiency was the strongest single predictor of finish at r = &minus;0.54, which
+        does support the one conclusion the original got right. I had written that Poland's title came
+        down to their serve receive, and that holds up now that it rests on something other than a
+        circular score.
+      </p>
+
+      <div class="note">
+        <p><strong>How much to believe this.</strong> There are twelve teams. A correlation needs to
+        exceed roughly 0.58 in absolute value to reach conventional significance at that sample size,
+        and none of these do. They are directional hints from a single tournament, not established
+        effects. I would rather state that plainly than present &minus;0.54 as a finding, because the
+        first version of this analysis stated things far more confidently than the evidence
+        supported.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>What I would do next</h2>
+      <ul>
+        <li>Separate ratings by role instead of one score, since the data says attacking and defending
+            are different axes.</li>
+        <li>Pull match level data rather than tournament totals, which would allow a split half
+            reliability test to show which statistics are skill and which are noise.</li>
+        <li>Shrink each player's rate toward the positional mean in proportion to their sample size,
+            which is the standard treatment for thin samples and would handle the threshold problem
+            more gracefully than a hard cutoff.</li>
+      </ul>
+    </section>
+
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="case-nav">
+    <a class="btn" href="../index.html#work">&larr; All work</a>
+    <a class="btn" href="stake-factor.html">Next: Stake Factor &rarr;</a>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; 2026 Max Nudelman &middot; Denver, CO</span>
+    <span><a href="../index.html#contact">Get in touch</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

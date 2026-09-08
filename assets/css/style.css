@@ -305,3 +305,16 @@ tr td strong { color: var(--accent); }
   html { scroll-behavior: auto; }
   * { transition: none !important; }
 }
+
+/* ============================================================
+   FIGURES (case study charts)
+   ============================================================ */
+.figure { margin: 0 0 34px; max-width: 100%; }
+.figure img {
+  width: 100%; height: auto; display: block;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--ink);
+}
+.figure figcaption {
+  color: var(--text-3); font-size: .86rem; margin-top: 10px; line-height: 1.5;
+  max-width: var(--prose);
+}

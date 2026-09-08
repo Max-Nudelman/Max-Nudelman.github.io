@@ -60,11 +60,12 @@
   <div class="wrap">
     <div class="section-head">
       <p class="eyebrow">Selected work</p>
-      <h2>Three projects, one question</h2>
+      <h2>Four projects, one habit</h2>
       <p>
-        Every project here comes back to the same question, which is where the betting market is
-        wrong and how you would know that it wasn't just luck. Each one links to a full writeup
-        with the method, the numbers, and the parts that didn't work out.
+        Most of these come back to the same question, which is where a market or a metric is wrong
+        and how you would know it wasn't just luck. Each one links to a full writeup with the method,
+        the numbers, and the parts that didn't work out, including one where the thing that didn't
+        work was my own earlier analysis.
       </p>
     </div>
 
@@ -137,6 +138,29 @@
           <div class="metric"><div class="num">49,417</div><div class="lab">matches fit</div></div>
           <div class="metric"><div class="num">48</div><div class="lab">teams modeled</div></div>
           <div class="metric"><div class="num">0</div><div class="lab">external libraries</div></div>
+        </div>
+        <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
+      </a>
+
+      <!-- ---- Project 4: VNL ---- -->
+      <a class="card" href="projects/vnl-2025.html">
+        <div class="card-top">
+          <h3>Auditing My Own Analysis</h3>
+          <span class="tag tag-live">Complete</span>
+        </div>
+        <p class="kicker">Volleyball Nations League 2025 &middot; finding the errors in my own work</p>
+        <p class="summary">
+          I wrote a volleyball statistics analysis for a class, published it, and later found that one
+          of its central metrics was <strong>mathematically impossible</strong> and one of its main
+          conclusions was circular. I traced the first to a mislabelled column in the source data and
+          the second to scoring each stat against a total that already contained it. This is the
+          rebuild, and what the data actually says once both are fixed.
+        </p>
+        <div class="stack"><span>R / tidyverse</span><span>ggplot2</span><span>Data validation</span><span>Correlation analysis</span></div>
+        <div class="metrics">
+          <div class="metric"><div class="num">36</div><div class="lab">impossible values found</div></div>
+          <div class="metric"><div class="num">0.73 &rarr; -0.07</div><div class="lab">correlation once decircularised</div></div>
+          <div class="metric"><div class="num">305</div><div class="lab">players</div></div>
         </div>
         <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
       </a>
