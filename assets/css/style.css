@@ -373,3 +373,18 @@ tr td strong { color: var(--accent); }
   .vnl-tip { position: static; margin-bottom: 12px; max-width: none; }
   .vnl-stats { gap: 18px; }
 }
+
+/* select control for interactive figures */
+.ha-select { display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+.ha-select label { font-family:var(--mono); font-size:.74rem; color:var(--text-3);
+  text-transform:uppercase; letter-spacing:.1em; }
+.ha-select select {
+  font-family:var(--sans); font-size:.9rem; color:var(--text);
+  background:var(--ink); border:1px solid var(--line); border-radius:8px;
+  padding:7px 12px; cursor:pointer;
+}
+.ha-select select:hover { border-color:#38414d; }
+.ha-checks { display:flex; gap:20px; flex-wrap:wrap; margin-bottom:16px; }
+.ha-checks label { display:flex; align-items:center; gap:7px; font-size:.86rem;
+  color:var(--text-2); cursor:pointer; }
+.ha-checks input { accent-color:var(--accent); cursor:pointer; }
