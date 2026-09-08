@@ -217,21 +217,21 @@
       <a class="card" href="projects/stake-factor.html">
         <div class="card-top">
           <h3>Stake Factor</h3>
-          <span class="tag tag-progress">In progress</span>
+          <span class="tag tag-live">Complete</span>
         </div>
         <p class="kicker">Bettor segmentation and account risk policy &middot; 7 European leagues</p>
         <p class="summary">
           This is the question I was actually answering by hand at Fanatics, asked properly this time.
-          <strong>How many settled bets does it take to tell a sharp bettor from a lucky recreational
-          one, and what does it cost the book to act too early or too late?</strong> The market the
-          bettors bet into is real, the bettors themselves are simulated, and the output is a
-          continuous stake factor rather than a restrict or don't restrict label.
+          Closing line value identifies an adverse account in <strong>five settled bets</strong>, while
+          realized profit never does. But the useful finding is the other one:
+          <strong>restricting too many people costs the book four times more than the sharps ever
+          take.</strong>
         </p>
         <div class="stack"><span>DuckDB / SQL</span><span>Python</span><span>Clustering</span><span>Simulation</span></div>
         <div class="metrics">
-          <div class="metric"><div class="num">19,431</div><div class="lab">matches priced</div></div>
-          <div class="metric"><div class="num">2.7 to 5.7%</div><div class="lab">overround range</div></div>
-          <div class="metric"><div class="num">0</div><div class="lab">leagues beatable at close</div></div>
+          <div class="metric"><div class="num">5 bets</div><div class="lab">to identify a sharp</div></div>
+          <div class="metric"><div class="num">never</div><div class="lab">using realized profit</div></div>
+          <div class="metric"><div class="num">&minus;&pound;202k</div><div class="lab">cost of over-restricting</div></div>
         </div>
         <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
       </a>
