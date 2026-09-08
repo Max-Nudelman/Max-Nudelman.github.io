@@ -318,3 +318,58 @@ tr td strong { color: var(--accent); }
   color: var(--text-3); font-size: .86rem; margin-top: 10px; line-height: 1.5;
   max-width: var(--prose);
 }
+
+/* ============================================================
+   INTERACTIVE FIGURES (VNL case study)
+   ============================================================ */
+.vnl-widget {
+  border: 1px solid var(--line); background: var(--ink-2);
+  border-radius: 12px; padding: 22px 24px; margin: 0 0 34px; position: relative;
+}
+.vnl-widget h3 {
+  font-family: var(--sans); font-size: 1.02rem; font-weight: 600;
+  color: var(--text); margin: 0 0 6px;
+}
+.vnl-widget .vnl-sub { color: var(--text-2); font-size: .9rem; margin: 0 0 18px; max-width: 62ch; }
+.vnl-svg { width: 100%; height: auto; display: block; overflow: visible; }
+
+/* control rows */
+.vnl-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+.vnl-controls button {
+  font-family: var(--mono); font-size: .74rem; letter-spacing: .04em;
+  color: var(--text-2); background: var(--ink); border: 1px solid var(--line);
+  border-radius: 999px; padding: 6px 14px; cursor: pointer; transition: all .15s ease;
+}
+.vnl-controls button:hover { color: var(--text); border-color: #38414d; }
+.vnl-controls button.on { color: var(--ink); background: var(--accent); border-color: var(--accent); font-weight: 600; }
+
+/* slider */
+.vnl-slider { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+.vnl-slider label { font-family: var(--mono); font-size: .74rem; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: .1em; }
+.vnl-slider input[type=range] {
+  flex: 1 1 220px; min-width: 180px; accent-color: var(--accent);
+  background: transparent; cursor: pointer;
+}
+
+/* readout tiles */
+.vnl-stats { display: flex; flex-wrap: wrap; gap: 26px; padding: 16px 0 4px; border-top: 1px solid var(--line); margin-top: 14px; }
+.vnl-stats div .v { font-family: var(--serif); font-size: 1.5rem; color: var(--accent); line-height: 1.1; }
+.vnl-stats div .k { font-size: .78rem; color: var(--text-3); margin-top: 2px; }
+
+.vnl-note { color: var(--text-2); font-size: .88rem; margin-top: 14px; min-height: 2.6em; line-height: 1.5; }
+
+/* hover tooltip */
+.vnl-tip {
+  position: absolute; right: 24px; top: 22px; z-index: 3;
+  background: var(--ink); border: 1px solid var(--accent-dim); border-radius: 8px;
+  padding: 10px 14px; font-size: .82rem; color: var(--text-2); line-height: 1.5;
+  pointer-events: none; max-width: 260px;
+}
+.vnl-tip strong { color: var(--text); }
+
+@media (max-width: 620px) {
+  .vnl-widget { padding: 18px 16px; }
+  .vnl-tip { position: static; margin-bottom: 12px; max-width: none; }
+  .vnl-stats { gap: 18px; }
+}
