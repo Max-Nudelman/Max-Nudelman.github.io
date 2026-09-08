@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Max Nudelman, Data Analyst</title>
-<meta name="description" content="Business Information and Analytics senior at the University of Denver and former Fanatics Betting and Gaming risk trader. Projects in sports betting market analytics, SQL and Tableau.">
+<meta name="description" content="Business Information and Analytics senior at the University of Denver. Projects on measurement, causal inference and data validation across sport, health and the environment.">
 
 <!-- Social preview (used when the link is pasted into LinkedIn, Slack, iMessage) -->
 <meta property="og:title" content="Max Nudelman, Data Analyst">
-<meta property="og:description" content="I worked the risk desk at Fanatics. Now I am doing that same work with data.">
+<meta property="og:description" content="Most of my work comes down to one question: is this effect real, or an artifact of how it was measured?">
 <meta property="og:type" content="website">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,10 +41,10 @@
       <span class="status"><span class="dot"></span> Seeking data analyst roles &middot; June 2027 grad</span>
       <h1>Max Nudelman</h1>
       <p class="lede">
-        Last summer I worked the risk desk at <strong>Fanatics Betting and Gaming</strong>, where I
-        watched a feed of action from restricted accounts and used it to find lines that had gone
-        stale or prices that were just wrong. <strong>Now I am doing that same kind of work with
-        data</strong>, using SQL, Python, R and Tableau on real sportsbook markets.
+        I study Business Information and Analytics at the University of Denver, and most of what I
+        build comes down to one question: <strong>is this effect real, or is it an artifact of how it
+        was measured?</strong> I learned to ask it on a risk desk, repricing live markets against
+        incoming money, and I have been asking it since with SQL, Python, R and Tableau.
       </p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#work">See the work</a>
@@ -62,10 +62,12 @@
       <p class="eyebrow">Selected work</p>
       <h2>Five projects, one habit</h2>
       <p>
-        Most of these come back to the same question, which is where a market or a metric is wrong
-        and how you would know it wasn't just luck. Each one links to a full writeup with the method,
-        the numbers, and the parts that didn't work out, including one where the thing that didn't
-        work was my own earlier analysis.
+        Different subjects, same discipline. A metric that turned out to be mathematically
+        impossible, a conclusion that was circular by construction, a benchmark that moved because
+        its ingredients changed rather than the world, and a natural experiment that separated a
+        cause from a correlation. Each links to a full writeup with the method, the numbers, and the
+        parts that didn't work out, including one where the thing that didn't work was my own
+        earlier analysis.
       </p>
     </div>
 
@@ -90,6 +92,52 @@
           <div class="metric"><div class="num">5.6pp</div><div class="lab">fall in home win rate</div></div>
           <div class="metric"><div class="num">91%</div><div class="lab">of the card edge gone</div></div>
           <div class="metric"><div class="num">11</div><div class="lab">divisions agreeing</div></div>
+        </div>
+        <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
+      </a>
+
+      <!-- ---- Project 4: VNL ---- -->
+      <a class="card" href="projects/vnl-2025.html">
+        <div class="card-top">
+          <h3>Auditing My Own Analysis</h3>
+          <span class="tag tag-live">Complete</span>
+        </div>
+        <p class="kicker">Volleyball Nations League 2025 &middot; finding the errors in my own work</p>
+        <p class="summary">
+          I wrote a volleyball statistics analysis for a class, published it, and later found that one
+          of its central metrics was <strong>mathematically impossible</strong> and one of its main
+          conclusions was circular. I traced the first to a mislabelled column in the source data and
+          the second to scoring each stat against a total that already contained it. This is the
+          rebuild, and what the data actually says once both are fixed.
+        </p>
+        <div class="stack"><span>R / tidyverse</span><span>ggplot2</span><span>Data validation</span><span>Correlation analysis</span></div>
+        <div class="metrics">
+          <div class="metric"><div class="num">36</div><div class="lab">impossible values found</div></div>
+          <div class="metric"><div class="num">0.73 &rarr; -0.07</div><div class="lab">correlation once decircularised</div></div>
+          <div class="metric"><div class="num">305</div><div class="lab">players</div></div>
+        </div>
+        <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
+      </a>
+
+      <!-- ---- Project 3: World Cup ---- -->
+      <a class="card" href="projects/world-cup-2026.html">
+        <div class="card-top">
+          <h3>World Cup 2026 Model</h3>
+          <span class="tag tag-live">Live demo</span>
+        </div>
+        <p class="kicker">Elo and Poisson forecasting &middot; interactive dashboard</p>
+        <p class="summary">
+          I built a forecasting model for the 48 team 2026 World Cup from scratch, starting with
+          importance weighted Elo ratings fit over the full history of international results and
+          feeding those into a <strong>ridge regularised Poisson attack and defence model</strong>
+          that simulates every group and produces advancement odds. It runs as a self contained
+          interactive dashboard.
+        </p>
+        <div class="stack"><span>Python</span><span>Elo</span><span>Poisson MLE</span><span>Monte Carlo</span></div>
+        <div class="metrics">
+          <div class="metric"><div class="num">49,417</div><div class="lab">matches fit</div></div>
+          <div class="metric"><div class="num">48</div><div class="lab">teams modeled</div></div>
+          <div class="metric"><div class="num">0</div><div class="lab">external libraries</div></div>
         </div>
         <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
       </a>
@@ -142,52 +190,6 @@
         <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
       </a>
 
-      <!-- ---- Project 3: World Cup ---- -->
-      <a class="card" href="projects/world-cup-2026.html">
-        <div class="card-top">
-          <h3>World Cup 2026 Model</h3>
-          <span class="tag tag-live">Live demo</span>
-        </div>
-        <p class="kicker">Elo and Poisson forecasting &middot; interactive dashboard</p>
-        <p class="summary">
-          I built a forecasting model for the 48 team 2026 World Cup from scratch, starting with
-          importance weighted Elo ratings fit over the full history of international results and
-          feeding those into a <strong>ridge regularised Poisson attack and defence model</strong>
-          that simulates every group and produces advancement odds. It runs as a self contained
-          interactive dashboard.
-        </p>
-        <div class="stack"><span>Python</span><span>Elo</span><span>Poisson MLE</span><span>Monte Carlo</span></div>
-        <div class="metrics">
-          <div class="metric"><div class="num">49,417</div><div class="lab">matches fit</div></div>
-          <div class="metric"><div class="num">48</div><div class="lab">teams modeled</div></div>
-          <div class="metric"><div class="num">0</div><div class="lab">external libraries</div></div>
-        </div>
-        <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
-      </a>
-
-      <!-- ---- Project 4: VNL ---- -->
-      <a class="card" href="projects/vnl-2025.html">
-        <div class="card-top">
-          <h3>Auditing My Own Analysis</h3>
-          <span class="tag tag-live">Complete</span>
-        </div>
-        <p class="kicker">Volleyball Nations League 2025 &middot; finding the errors in my own work</p>
-        <p class="summary">
-          I wrote a volleyball statistics analysis for a class, published it, and later found that one
-          of its central metrics was <strong>mathematically impossible</strong> and one of its main
-          conclusions was circular. I traced the first to a mislabelled column in the source data and
-          the second to scoring each stat against a total that already contained it. This is the
-          rebuild, and what the data actually says once both are fixed.
-        </p>
-        <div class="stack"><span>R / tidyverse</span><span>ggplot2</span><span>Data validation</span><span>Correlation analysis</span></div>
-        <div class="metrics">
-          <div class="metric"><div class="num">36</div><div class="lab">impossible values found</div></div>
-          <div class="metric"><div class="num">0.73 &rarr; -0.07</div><div class="lab">correlation once decircularised</div></div>
-          <div class="metric"><div class="num">305</div><div class="lab">players</div></div>
-        </div>
-        <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
-      </a>
-
     </div>
   </div>
 </section>
@@ -216,9 +218,9 @@
                 reopened them.</li>
             <li>Did a lot of customer management, including the account level decisions about who
                 got restricted and whose stake factor went up.</li>
-            <li>This is where most of the projects on this site come from. Watching a restricted
-                account get treated as a sensor rather than just a closed door is what made me want
-                to build the idea out properly with data.</li>
+            <li>The habit behind everything on this site started here. A restricted account was
+                treated as a signal rather than just a closed door, and I wanted to see what that
+                idea looked like done properly with data instead of by feel.</li>
           </ul>
         </div>
       </article>
@@ -247,7 +249,7 @@
     <div class="section-head">
       <p class="eyebrow">Toolkit</p>
       <h2>What I work in</h2>
-      <p>Listed honestly, so the things I have actually shipped something with are separated in my head from the things I have only done for a class.</p>
+      <p>Listed honestly, so the things I have actually shipped something with stay separate from the things I have only done for a class.</p>
     </div>
 
     <div class="skills">
@@ -278,12 +280,12 @@
         </ul>
       </div>
       <div class="skillset">
-        <h3>Domain</h3>
+        <h3>Methods</h3>
         <ul>
-          <li>Sportsbook risk and trading</li>
-          <li>Odds devigging and calibration</li>
-          <li>Closing line value (CLV)</li>
-          <li>Account-level stake policy</li>
+          <li>Natural experiments</li>
+          <li>Hypothesis testing and bootstrap</li>
+          <li>Probability calibration</li>
+          <li>Data validation and auditing</li>
         </ul>
       </div>
     </div>
@@ -297,9 +299,10 @@
       <p class="eyebrow">Contact</p>
       <h2>Let's talk</h2>
       <p>
-        I'm looking for data analyst roles starting after I graduate in June 2027, ideally at a
-        sports betting, gaming or sports data company. I'm based in Denver and happy to relocate.
-        Email is the fastest way to reach me.
+        I'm looking for data analyst roles starting after I graduate in June 2027. I'm still working
+        out which industry suits me best, which is deliberate, so I have been picking projects in
+        different fields to find out. I'm based in Denver and happy to relocate. Email is the fastest
+        way to reach me.
       </p>
     </div>
 
