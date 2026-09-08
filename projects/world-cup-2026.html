@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>World Cup 2026 Model | Max Nudelman</title>
+<meta name="description" content="Elo ratings plus a weighted Poisson attack/defence model over 49,417 international matches, simulating the full 2026 World Cup in the browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="nav-name" href="../index.html">Max Nudelman</a>
+    <div class="nav-links">
+      <a href="../index.html#work">Work</a>
+      <a href="../index.html#experience">Experience</a>
+      <a class="cta" href="../index.html#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="case-head">
+  <div class="wrap">
+    <a class="back" href="../index.html#work">&larr; All work</a>
+    <span class="tag tag-live" style="display:inline-block;margin-bottom:16px">Live demo</span>
+    <h1>World Cup 2026 Model</h1>
+    <p class="lede">
+      A forecasting engine for the 48 team 2026 World Cup, built from the ground up. It runs Elo
+      ratings over 154 years of international results, feeds those into a weighted Poisson goal model,
+      and then simulates the entire tournament in the browser.
+    </p>
+
+    <div class="factsheet">
+      <div class="fact"><div class="lab">Role</div><div class="val">Solo project</div></div>
+      <div class="fact"><div class="lab">Stack</div><div class="val">Python (standard library only), JavaScript</div></div>
+      <div class="fact"><div class="lab">Data</div><div class="val">martj42/international_results</div></div>
+      <div class="fact"><div class="lab">Scale</div><div class="val">49,417 matches, 1872 to 2026</div></div>
+    </div>
+
+    <div class="hero-actions" style="margin-top:32px">
+      <a class="btn btn-primary" href="../demos/world-cup-2026.html">Open the live dashboard &rarr;</a>
+    </div>
+  </div>
+</header>
+
+<div class="case-body">
+  <div class="wrap">
+
+    <section>
+      <h2>The question</h2>
+      <p>
+        Every sportsbook prices a World Cup. I wanted to find out what it actually takes to build that
+        price yourself, going from raw match results all the way to a number you would be willing to
+        defend, without reaching for a library that does the hard part for you.
+      </p>
+      <p>
+        So the whole model is written using nothing but Python's standard library. No pandas, no
+        scikit-learn, no scipy. If a gradient gets computed somewhere in there, I wrote it.
+      </p>
+    </section>
+
+    <section>
+      <h2>How it works</h2>
+      <p>Three layers, each feeding the next:</p>
+      <ol>
+        <li>
+          <strong>Elo ratings.</strong> Every international match since 1872 gets replayed in order.
+          Ratings update using a K factor that scales by <em>match importance</em>, so a World Cup game
+          moves a rating three times as much as a friendly does, and it also scales by margin of
+          victory so that a 5 goal win counts for more than a 1 goal win. Home advantage comes in as a
+          65 point rating bonus, which is switched off at neutral venues.
+        </li>
+        <li>
+          <strong>A weighted Poisson attack and defence model.</strong> Each team gets an attack
+          coefficient and a defence coefficient, fit by maximum likelihood with ridge regularisation
+          across 11,003 matches since 2015. Recent games count for more, because match weight decays
+          with a <strong>2.5 year half life</strong>, meaning a 2016 result carries roughly a quarter
+          of the weight of a 2026 one. The fit produces expected goals for any fixture using
+          <code>log &lambda;<sub>home</sub> = &mu; + att[H] &minus; def[A] + homeAdv</code>.
+        </li>
+        <li>
+          <strong>Monte Carlo tournament simulation.</strong> Two expected goal numbers give you two
+          Poisson distributions, and crossing them gives a full matrix of scorelines, which is where
+          the win, draw and loss probabilities come from. The dashboard then samples scores from that
+          model across all 104 group games plus the knockout bracket, including strength weighted
+          penalty shootouts, thousands of times over, to produce advancement and title odds.
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>The dashboard</h2>
+      <p>
+        The output is a single self contained HTML file with the fitted model baked into it. There is
+        no server and no dependencies, so it opens anywhere. It does four things:
+      </p>
+      <ul>
+        <li>A <strong>match predictor</strong> for any two of the 48 teams, at any venue.</li>
+        <li><strong>Live in game repricing</strong>, where you set the current minute and score and
+            the probabilities update the way an in play market would. This is the piece closest to what
+            I was doing at Fanatics.</li>
+        <li>A <strong>scoreline heat map</strong> that shows the full joint distribution rather than
+            just the three way price.</li>
+        <li>A <strong>full tournament simulation</strong> with group tables, advancement odds, and CSV
+            export of every table.</li>
+      </ul>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="../demos/world-cup-2026.html">Open the live dashboard &rarr;</a>
+      </div>
+    </section>
+
+    <section>
+      <h2>What it gets wrong</h2>
+      <p>I want to state these plainly, because a model you can't criticise isn't really a model:</p>
+      <ul>
+        <li><strong>Goals are modelled as independent Poisson.</strong> Real football has correlated
+            scorelines, and draws and 0 to 0 results happen more often than independence would imply.
+            The Dixon and Coles correction for low scores is the standard fix and the obvious next
+            step.</li>
+        <li><strong>No squad information.</strong> Injuries, suspensions and retirements are completely
+            invisible to the model, since it only knows what teams have done and not who is actually
+            available to play.</li>
+        <li><strong>Confederation imbalance.</strong> Teams that mostly play inside their own
+            confederation end up with ratings that are hard to compare across regions, because there
+            are so few games connecting the pools together.</li>
+        <li><strong>Nothing is calibrated against market prices yet.</strong> The honest test of any
+            forecast is whether it can beat the closing line, and that is exactly the standard my
+            <a href="market-movement.html">Premier League project</a> was built to measure.</li>
+      </ul>
+    </section>
+
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="case-nav">
+    <a class="btn" href="../index.html#work">&larr; All work</a>
+    <a class="btn" href="market-movement.html">Next: Does the Market Know Something? &rarr;</a>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; 2026 Max Nudelman &middot; Denver, CO</span>
+    <span><a href="../index.html#contact">Get in touch</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

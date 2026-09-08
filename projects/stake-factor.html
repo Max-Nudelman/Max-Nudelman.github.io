@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stake Factor | Max Nudelman</title>
+<meta name="description" content="How many settled bets does it take to tell a sharp bettor from a lucky one, and what does it cost the book to act too early or too late?">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="nav-name" href="../index.html">Max Nudelman</a>
+    <div class="nav-links">
+      <a href="../index.html#work">Work</a>
+      <a href="../index.html#experience">Experience</a>
+      <a class="cta" href="../index.html#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="case-head">
+  <div class="wrap">
+    <a class="back" href="../index.html#work">&larr; All work</a>
+    <span class="tag tag-progress" style="display:inline-block;margin-bottom:16px">In progress &middot; market layer complete</span>
+    <h1>Stake Factor</h1>
+    <p class="lede">
+      Detecting adverse sportsbook accounts before the money is gone. This is the decision I was
+      making by hand on a live desk, rebuilt into something you can actually measure and put a price
+      on.
+    </p>
+
+    <div class="factsheet">
+      <div class="fact"><div class="lab">Role</div><div class="val">Solo project</div></div>
+      <div class="fact"><div class="lab">Stack</div><div class="val">DuckDB / SQL, Python, Tableau</div></div>
+      <div class="fact"><div class="lab">Data</div><div class="val">Real market, simulated bettors</div></div>
+      <div class="fact"><div class="lab">Scale</div><div class="val">19,431 matches &middot; 7 leagues</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="case-body">
+  <div class="wrap">
+
+    <section>
+      <h2>The question</h2>
+      <div class="finding">
+        <p>
+          How many settled bets does it take to tell a sharp bettor from a lucky recreational one,
+          and what does it cost the book to act too early or too late?
+        </p>
+      </div>
+      <p>
+        At Fanatics I was turning that dial mostly by feel. I would pull up an account, look at its
+        history and its metrics, and decide whether it needed restricting or whether its stake factor
+        should go up. It was a judgment call made in a few minutes on partial information, and it was
+        usually right, but I could never have told you how right. This project is the same call made
+        with evidence behind it, and with an honest accounting of the errors on both sides.
+      </p>
+      <p>
+        It's worth saying what the headline question is <em>not</em>. It isn't whether I can cluster
+        bettors. Clustering on data that I generated myself would be circular, because I would just be
+        rediscovering my own assumptions and then calling the result a finding. The defensible
+        question is about <strong>how fast an estimator converges against a truth you already
+        know</strong>, and that is exactly the kind of question simulation is the right tool for.
+      </p>
+    </section>
+
+    <section>
+      <h2>Design commitments</h2>
+      <p>Three decisions made up front, each of which rules something out:</p>
+      <ul>
+        <li><strong>The axis is skill against economic value, rather than profitable against
+            adverse.</strong> A high volume recreational parlay bettor is the most valuable account on
+            the whole book, while a $50 sharp is adverse but cheap. If you collapse those two into a
+            single dimension you throw away the thing the business actually cares about.</li>
+        <li><strong>The output is a continuous stake factor, not a binary label.</strong> Restrict or
+            don't restrict was never really the decision I was making. It was a dial.</li>
+        <li><strong>Segment on process, not on outcome.</strong> The features are closing line value,
+            bet timing, market selection and stake behavior, and never realized profit or win rate.
+            Under a few thousand bets a season of profit and loss is mostly variance, so showing that
+            explicitly is one of the findings rather than a footnote.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Hybrid data: real market, simulated bettors</h2>
+      <p>
+        There is no public dataset of individual bettor histories and there never will be, because it
+        is the most commercially sensitive data a sportsbook holds. So the design splits the
+        difference. <strong>The market is real</strong>, meaning seven years of actual opening and
+        closing odds across seven European divisions including Pinnacle, which is the industry
+        benchmark. <strong>The bettors are simulated</strong> from documented and parameterized
+        archetypes betting into that real market.
+      </p>
+      <p>
+        That split is what makes the result mean anything. The bettors are my assumptions, and they
+        are stated openly in a parameter file so anyone can argue with them. The prices they face, and
+        whether those prices were beatable at all, are not up to me.
+      </p>
+    </section>
+
+    <section>
+      <h2>What I found so far</h2>
+      <p>
+        The market layer is built and queried, all of it written in SQL against DuckDB. Two hypotheses
+        went in. One of them held up and the more interesting one did not.
+      </p>
+
+      <h3 style="font-family:var(--sans);font-size:1.05rem;font-weight:600;margin-top:26px">Confirmed: books charge far more where nobody is watching</h3>
+      <div class="table-scroll">
+        <table>
+          <caption>Pinnacle closing overround by division, across 19,431 matches</caption>
+          <thead><tr><th>League</th><th>Market depth</th><th class="num">Overround</th></tr></thead>
+          <tbody>
+            <tr><td>La Liga</td><td>Deep</td><td class="num">2.66%</td></tr>
+            <tr><td>Premier League</td><td>Deep</td><td class="num">2.68%</td></tr>
+            <tr><td>MLS</td><td>Medium</td><td class="num">2.97%</td></tr>
+            <tr><td>Championship</td><td>Medium</td><td class="num">3.07%</td></tr>
+            <tr><td>Eredivisie</td><td>Medium</td><td class="num">3.33%</td></tr>
+            <tr><td>League Two</td><td>Thin</td><td class="num">3.71%</td></tr>
+            <tr><td>Scottish League One</td><td>Thin</td><td class="num"><strong>5.71%</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Scottish League One carries more than double the margin of the Premier League. Books compete
+        on price where the volume is, and where nobody is looking they take what they like.
+      </p>
+
+      <h3 style="font-family:var(--sans);font-size:1.05rem;font-weight:600;margin-top:30px">Rejected: thin markets are <em>not</em> mispriced</h3>
+      <p>
+        The obvious follow on hypothesis was that thin leagues, being less scrutinized, would also be
+        priced less accurately. To test it I compared each league's observed calibration error against
+        the error you would expect from <strong>sampling noise alone</strong>. This step matters,
+        because with only a few thousand matches you are guaranteed to see some apparent error even if
+        the prices are perfect. A ratio near 1.0 means the league is indistinguishable from perfectly
+        calibrated.
+      </p>
+      <div class="table-scroll">
+        <table>
+          <caption>Observed vs. noise-expected calibration error, Pinnacle closing prices</caption>
+          <thead><tr><th>League</th><th class="num">Observed</th><th class="num">Noise</th><th class="num">Ratio</th></tr></thead>
+          <tbody>
+            <tr><td>La Liga</td><td class="num">1.76pp</td><td class="num">1.40pp</td><td class="num">1.26</td></tr>
+            <tr><td>Scottish League One</td><td class="num">2.44pp</td><td class="num">2.09pp</td><td class="num">1.17</td></tr>
+            <tr><td>Championship</td><td class="num">0.99pp</td><td class="num">1.15pp</td><td class="num">0.86</td></tr>
+            <tr><td>Premier League</td><td class="num">1.07pp</td><td class="num">1.32pp</td><td class="num">0.81</td></tr>
+            <tr><td>Eredivisie</td><td class="num">1.19pp</td><td class="num">1.47pp</td><td class="num">0.81</td></tr>
+            <tr><td>MLS</td><td class="num">0.69pp</td><td class="num">0.86pp</td><td class="num">0.80</td></tr>
+            <tr><td>League Two</td><td class="num">0.81pp</td><td class="num">1.18pp</td><td class="num">0.68</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="finding">
+        <p>
+          <strong>Every ratio falls between 0.68 and 1.26.</strong> Not a single league shows
+          mispricing that can be distinguished from noise. My hypothesis is rejected, and the result
+          independently reproduces the received wisdom that Pinnacle's closing line is effectively
+          unbeatable.
+        </p>
+      </div>
+      <p>
+        That result matters for the project instead of derailing it, because it means a simulated
+        sharp can't get an edge just by picking an obscure league. Their edge has to come from
+        <em>timing</em>, meaning beating the closing line, which is both the realistic mechanism and
+        the one I watched operate first hand at Fanatics.
+      </p>
+    </section>
+
+    <section>
+      <h2>Where it stands</h2>
+      <p>
+        The market layer, the dimensional model and the calibration queries are done. What is still
+        ahead of me is the bettor simulation, the account level feature engineering covering closing
+        line value, timing and stake behavior, the time to detection curves that actually answer the
+        headline question, and the cost model that prices false positives against false negatives.
+      </p>
+      <div class="note">
+        <p><strong>Deliberately parked.</strong> This is a seven week build, and I paused it to ship
+        the <a href="market-movement.html">Premier League dashboard</a> first. That project builds the
+        same market layer this one needs, so nothing gets wasted and one finished artifact lands
+        sooner. I would rather show honest progress on a hard problem than a finished easy one.</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="case-nav">
+    <a class="btn" href="../index.html#work">&larr; All work</a>
+    <a class="btn" href="world-cup-2026.html">Next: World Cup 2026 Model &rarr;</a>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; 2026 Max Nudelman &middot; Denver, CO</span>
+    <span><a href="../index.html#contact">Get in touch</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

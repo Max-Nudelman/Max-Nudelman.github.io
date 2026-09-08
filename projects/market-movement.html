@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Does the Market Know Something? | Max Nudelman</title>
+<meta name="description" content="Seven seasons of Premier League odds from 16 bookmakers, devigged and tracked from open to close. Steamed selections beat their opening implied probability by 3.4 points.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="nav-name" href="../index.html">Max Nudelman</a>
+    <div class="nav-links">
+      <a href="../index.html#work">Work</a>
+      <a href="../index.html#experience">Experience</a>
+      <a class="cta" href="../index.html#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<header class="case-head">
+  <div class="wrap">
+    <a class="back" href="../index.html#work">&larr; All work</a>
+    <span class="tag tag-progress" style="display:inline-block;margin-bottom:16px">In progress &middot; dashboard shipping Sept 2026</span>
+    <h1>Does the Market Know Something?</h1>
+    <p class="lede">
+      Seven seasons of Premier League prices from 16 bookmakers, stripped of the margin they have
+      built into them and tracked from the opening line all the way to the close. If the money moves
+      a price, does the result actually follow?
+    </p>
+
+    <div class="factsheet">
+      <div class="fact"><div class="lab">Role</div><div class="val">Solo project</div></div>
+      <div class="fact"><div class="lab">Stack</div><div class="val">R (tidyverse), Tableau Public</div></div>
+      <div class="fact"><div class="lab">Data</div><div class="val">football-data.co.uk, 2019/20 through 2025/26</div></div>
+      <div class="fact"><div class="lab">Scale</div><div class="val">2,660 matches &middot; 131,793 prices</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="case-body">
+  <div class="wrap">
+
+    <section>
+      <h2>The question</h2>
+      <p>
+        A bookmaker's opening price is really just a forecast, and by the time a match kicks off that
+        price has been pushed around by everyone who bet into it. The belief across the industry is
+        that the <strong>closing</strong> line is the sharpest number available, meaning that the
+        movement of the market itself carries information.
+      </p>
+      <p>
+        I wanted to test that on real prices instead of taking it on faith, because it is the exact
+        assumption sitting underneath the job I did at Fanatics. When a line moves against you, do you
+        respect it or fade it?
+      </p>
+    </section>
+
+    <section>
+      <h2>Getting the data honest</h2>
+      <p>
+        You can't compare raw odds to reality directly, because every price has the bookmaker's
+        margin baked into it. If you add up the implied probabilities across a match's three outcomes
+        you get more than 100%, and that excess is called the <em>overround</em>. So the pipeline does
+        three things before anything else happens:
+      </p>
+      <ol>
+        <li><strong>Stack and tidy.</strong> Seven season files, each 165 columns wide, reshaped into
+            one long table of 131,793 individual prices keyed on match, bookmaker, outcome and phase,
+            where phase is either the opening price or the closing one.</li>
+        <li><strong>Measure the margin.</strong> <code>margin = sum(1/odds) &minus; 1</code>, computed
+            for each bookmaker on each match.</li>
+        <li><strong>Devig.</strong> Rescale each price into a true probability using
+            <code>p = (1/odds) / sum(1/odds)</code>, so that a forecast can be scored against what
+            actually happened. This is proportional devigging, which is the simplest method. Shin and
+            power devigging are the more sophisticated alternatives and are the natural next step.</li>
+      </ol>
+      <div class="note">
+        <p><strong>The trap I walked into first.</strong> Bookmaker coverage turned out to be badly
+        unbalanced, since only three of the 16 books span all seven seasons and several of them only
+        show up in 2025/26. That means ranking books on their raw average margin actually ranks
+        <em>when they happened to be tracked</em> rather than how they price. Every comparison had to
+        become a paired one, so a book's margin minus the market average margin on the same match and
+        the same phase. Doing that changes the answer completely. Ladbrokes looks like the second
+        worst book at 6.51% if you take the naive average, but sits mid pack at +0.90% once it is
+        paired properly.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>What I found</h2>
+
+      <div class="finding">
+        <p>
+          <strong>Market movement predicts outcomes.</strong> Selections whose price shortened
+          between the open and the close, which the industry calls steaming, won <strong>3.4
+          percentage points more often</strong> than their opening devigged probability said they
+          should. Selections that drifted the other way underperformed theirs by <strong>5.0
+          points</strong>.
+        </p>
+      </div>
+
+      <p>
+        The reason I believe that isn't the size of the number by itself. It's that the same number
+        shows up independently across books that set their prices separately:
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Edge on steamed selections against opening implied probability, by price source</caption>
+          <thead><tr><th>Price source</th><th class="num">Edge on steamed selections</th></tr></thead>
+          <tbody>
+            <tr><td>Market average</td><td class="num"><strong>+3.40 pp</strong></td></tr>
+            <tr><td>Pinnacle</td><td class="num">+3.45 pp</td></tr>
+            <tr><td>Best available price</td><td class="num">+3.36 pp</td></tr>
+            <tr><td>Bet365</td><td class="num">+3.28 pp</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Three further results came out of the same pipeline:</p>
+      <ul>
+        <li><strong>Favourite and longshot bias survives devigging.</strong> Even once the margin is
+            removed, heavy favourites are still underpriced by about 3.4 points and longshots are
+            overpriced by roughly 0.9. That tells me the bias lives in what the market believes, and
+            not only in what it charges.</li>
+        <li><strong>Empty stadiums cost the home team.</strong> The home win rate fell from 45.3% to
+            37.9% during the 2020/21 season when there were no crowds, and then recovered to 48.4%
+            afterwards. That is about as clean a natural experiment as football data is ever going to
+            give you.</li>
+        <li><strong>The benchmark itself moves.</strong> The market average margin looks like it
+            jumps to 5.67% in 2025/26, but Bet365's own margin is basically flat across all seven
+            seasons, going from 5.40% to 5.59%. The entire jump comes from the set of tracked books
+            growing from six to nine. A metric whose composition changes underneath it isn't showing
+            you a trend, it's showing you a change in bookkeeping.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Where it stands</h2>
+      <p>
+        The data pipeline is finished and verified. It is two R scripts that run end to end from a
+        cold start, with assertions on the column counts, the bookmaker counts, and a self consistency
+        check where the market average compared against itself has to come out at exactly zero. Every
+        finding above is computed and checked.
+      </p>
+      <p>
+        What is still in flight is the Tableau Public dashboard that presents all of it, which I am
+        building now and which this page will link to once it ships. I'm learning Tableau on this
+        project rather than learning it separately and then coming back.
+      </p>
+    </section>
+
+    <section>
+      <h2>What I'd do differently</h2>
+      <ul>
+        <li>Proportional devigging is the crude method. Shin's method accounts for insider action and
+            would probably sharpen the favourite and longshot result.</li>
+        <li>Right now steaming is defined by a threshold on the probability change, which turns a
+            continuous thing into three buckets. Treating it continuously would be more defensible.</li>
+        <li>This is only one league, and the margin findings almost certainly don't carry over to
+            thinner divisions. That is exactly what the <a href="stake-factor.html">Stake Factor</a>
+            project went on to test, and it turned out to be right.</li>
+      </ul>
+    </section>
+
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="case-nav">
+    <a class="btn" href="../index.html#work">&larr; All work</a>
+    <a class="btn" href="stake-factor.html">Next: Stake Factor &rarr;</a>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; 2026 Max Nudelman &middot; Denver, CO</span>
+    <span><a href="../index.html#contact">Get in touch</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>World Cup 2026 — Live Predictive Model</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#141a2e; --panel2:#1b2340; --line:#26304f;
+    --ink:#e8ecf6; --mut:#94a0c0; --acc:#37e0a0; --acc2:#5b8cff;
+    --warn:#ff6b6b; --gold:#ffd166; --draw:#9aa6c6;
+    --shadow:0 8px 30px rgba(0,0,0,.35);
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#16203f 0,transparent 60%),var(--bg);
+       color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       -webkit-font-smoothing:antialiased;line-height:1.45;
+       -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 18px 80px}
+  header.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  header.top h1{font-size:22px;margin:0;letter-spacing:.2px}
+  .badge{background:var(--panel2);color:var(--mut);border:1px solid var(--line);
+         padding:3px 9px;border-radius:999px;font-size:12px}
+  .sub{color:var(--mut);font-size:13px;margin:2px 0 18px}
+  .tabs{display:flex;gap:6px;margin:0 0 18px;flex-wrap:wrap}
+  .tab{background:var(--panel);border:1px solid var(--line);color:var(--mut);
+       padding:9px 16px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600}
+  .tab.active{background:linear-gradient(180deg,var(--acc2),#3f6fe0);color:#fff;border-color:transparent}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+         padding:18px;box-shadow:var(--shadow)}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:1.2fr 1fr 1fr}
+  @media(max-width:880px){.g2,.g3{grid-template-columns:1fr}}
+  h2.sec{font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin:0 0 12px}
+  label.f{display:block;font-size:12px;color:var(--mut);margin:0 0 5px}
+  select,input[type=number]{background:var(--panel2);color:var(--ink);border:1px solid var(--line);
+    border-radius:9px;padding:9px 10px;font-size:14px;width:100%}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:120px}
+  button.btn{background:var(--acc);color:#04261a;border:none;border-radius:10px;padding:10px 16px;
+    font-weight:700;cursor:pointer;font-size:14px}
+  button.btn.alt{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+  button.btn:disabled{opacity:.5;cursor:default}
+  /* odds bar */
+  .oddsbar{display:flex;height:46px;border-radius:10px;overflow:hidden;border:1px solid var(--line);margin:8px 0}
+  .oddsbar div{display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;
+    color:#06121f;transition:width .5s cubic-bezier(.4,0,.2,1);min-width:0;white-space:nowrap;overflow:hidden}
+  .oddsbar .h{background:linear-gradient(180deg,#5b8cff,#3f6fe0);color:#fff}
+  .oddsbar .d{background:linear-gradient(180deg,#cfd6ea,#9aa6c6)}
+  .oddsbar .a{background:linear-gradient(180deg,#ff8a5b,#ff6b3d);color:#fff}
+  .scoreboard{display:flex;align-items:center;justify-content:center;gap:18px;margin:6px 0 2px}
+  .scoreboard .t{flex:1;text-align:center}
+  .scoreboard .t .nm{font-weight:700;font-size:16px}
+  .scoreboard .t .el{color:var(--mut);font-size:12px}
+  .scoreboard .sc{font-size:40px;font-weight:800;letter-spacing:2px;font-variant-numeric:tabular-nums}
+  .clock{text-align:center;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+  .clock.live::before{content:"● ";color:var(--warn);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.3}}
+  .stepper{display:flex;align-items:center;gap:8px;justify-content:center}
+  .stepper button{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);
+    background:var(--panel2);color:var(--ink);font-size:18px;cursor:pointer;font-weight:700}
+  input[type=range]{width:100%}
+  /* stat chips */
+  .chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:6px}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px}
+  .chip .v{font-size:20px;font-weight:800}
+  .chip .k{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+  /* scoreline list */
+  .topscores{list-style:none;padding:0;margin:6px 0 0}
+  .topscores li{display:flex;align-items:center;gap:10px;margin:6px 0}
+  .topscores .ln{font-weight:700;font-variant-numeric:tabular-nums;width:48px}
+  .topscores .barwrap{flex:1;background:var(--panel2);border-radius:6px;height:16px;overflow:hidden}
+  .topscores .bar{height:100%;background:linear-gradient(90deg,var(--acc),#2bbf86)}
+  .topscores .pc{width:46px;text-align:right;color:var(--mut);font-size:12px}
+  /* heatmap */
+  .heat{display:grid;gap:2px;margin-top:8px}
+  .heat .cell{aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;
+    font-size:10px;color:rgba(255,255,255,.85)}
+  .heat .lbl{font-size:11px;color:var(--mut);display:flex;align-items:center;justify-content:center}
+  /* form pips */
+  .form{display:inline-flex;gap:3px}
+  .pip{width:16px;height:16px;border-radius:4px;font-size:10px;font-weight:800;color:#06121f;
+    display:flex;align-items:center;justify-content:center}
+  .pip.W{background:var(--acc)} .pip.D{background:var(--draw)} .pip.L{background:var(--warn);color:#fff}
+  /* tables */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;user-select:none}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr:hover td{background:rgba(91,140,255,.06)}
+  .barcell{position:relative}
+  .barcell .b{position:absolute;left:0;top:0;bottom:0;background:rgba(55,224,160,.16);border-radius:4px}
+  .barcell span{position:relative}
+  /* tournament */
+  .winrow{display:flex;align-items:center;gap:10px;margin:5px 0}
+  .winrow .nm{width:150px;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .winrow .barwrap{flex:1;background:var(--panel2);border-radius:6px;height:18px;overflow:hidden}
+  .winrow .bar{height:100%;background:linear-gradient(90deg,var(--gold),#f0a500);border-radius:6px}
+  .winrow .pc{width:54px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+  .groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .grp{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px}
+  .grp h4{margin:0 0 6px;font-size:13px}
+  .grp .gt{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--mut)}
+  .grp .gt b{color:var(--ink);font-weight:600}
+  .note{color:var(--mut);font-size:12px;margin-top:10px;line-height:1.5}
+  .exprow{display:flex;justify-content:flex-end;margin-bottom:10px}
+  @media print{
+    .tabs,#printBtn,#playBtn,#resetBtn,#simBtn,.stepper button,input[type=range],
+    .exprow,.note button{display:none!important}
+    body{background:#fff}
+    .panel{break-inside:avoid;box-shadow:none}
+    .wrap{max-width:100%}
+  }
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);
+    border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .hidden{display:none}
+  footer{color:var(--mut);font-size:12px;margin-top:26px;text-align:center;line-height:1.6}
+  a{color:var(--acc2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>⚽ World Cup 2026 — Predictive Model</h1>
+    <span class="badge" id="metaBadge">loading…</span>
+    <button class="btn alt" id="printBtn" style="margin-left:auto">🖨 Print / Save PDF</button>
+  </header>
+  <div class="sub" id="metaSub"></div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="live">🔴 Live Match</div>
+    <div class="tab" data-tab="tourn">🏆 Tournament Odds</div>
+    <div class="tab" data-tab="ratings">📊 Team Ratings</div>
+    <div class="tab" data-tab="about">ℹ️ How it works</div>
+  </div>
+
+  <!-- ============================================ LIVE MATCH ============= -->
+  <section id="tab-live">
+    <div class="grid g2">
+      <div class="panel">
+        <h2 class="sec">Match setup</h2>
+        <div class="row">
+          <div><label class="f">Team A</label><select id="teamH"></select></div>
+          <div><label class="f">Team B</label><select id="teamA"></select></div>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <div><label class="f">Venue / advantage</label>
+            <select id="venue">
+              <option value="neutral">Neutral</option>
+              <option value="home">Team A home</option>
+              <option value="away">Team B home</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="scoreboard" style="margin-top:16px">
+          <div class="t"><div class="nm" id="nmH"></div><div class="el" id="elH"></div></div>
+          <div class="sc"><span id="scH">0</span> : <span id="scA">0</span></div>
+          <div class="t"><div class="nm" id="nmA"></div><div class="el" id="elA"></div></div>
+        </div>
+        <div class="clock" id="clock">Pre-match · 0'</div>
+
+        <div class="row" style="margin-top:14px;align-items:flex-end">
+          <div>
+            <label class="f">Team A goals</label>
+            <div class="stepper"><button data-g="H" data-d="-1">−</button>
+              <span id="stH" style="min-width:24px;text-align:center;font-weight:800;font-size:18px">0</span>
+              <button data-g="H" data-d="1">+</button></div>
+          </div>
+          <div>
+            <label class="f">Team B goals</label>
+            <div class="stepper"><button data-g="A" data-d="-1">−</button>
+              <span id="stA" style="min-width:24px;text-align:center;font-weight:800;font-size:18px">0</span>
+              <button data-g="A" data-d="1">+</button></div>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <label class="f">Match minute · <span id="minLbl">0</span>'</label>
+          <input type="range" id="minute" min="0" max="90" value="0" step="1">
+        </div>
+        <div class="row" style="margin-top:14px">
+          <div style="flex:0 0 auto"><button class="btn" id="playBtn">▶ Simulate live</button></div>
+          <div style="flex:0 0 auto"><button class="btn alt" id="resetBtn">↺ Reset</button></div>
+          <div style="flex:0 0 auto"><button class="btn alt" id="expLive">⬇ Export CSV</button></div>
+        </div>
+        <div class="note">“Simulate live” plays the clock and lets the model randomly generate goals
+          from each team’s scoring rate — watch the odds react in real time. Or set any scenario manually
+          with the score steppers and minute slider.</div>
+      </div>
+
+      <div class="panel">
+        <h2 class="sec">Win probability <span id="liveTag" class="badge hidden">LIVE</span></h2>
+        <div class="oddsbar">
+          <div class="h" id="obH">—</div><div class="d" id="obD">—</div><div class="a" id="obA">—</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mut)">
+          <span id="lblH">Team A</span><span>Draw</span><span id="lblA">Team B</span>
+        </div>
+
+        <div class="chips">
+          <div class="chip"><div class="v" id="cExp">—</div><div class="k">Expected final score</div></div>
+          <div class="chip"><div class="v" id="cTot">—</div><div class="k">Exp. total goals</div></div>
+          <div class="chip"><div class="v" id="cBtts">—</div><div class="k">Both teams score</div></div>
+          <div class="chip"><div class="v" id="cOver">—</div><div class="k">Over 2.5 goals</div></div>
+        </div>
+
+        <h2 class="sec" style="margin-top:18px">Most likely final scores</h2>
+        <ul class="topscores" id="topScores"></ul>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h2 class="sec">Scoreline probability map (final score)</h2>
+      <div id="heat" class="heat"></div>
+      <div class="note">Rows = <b id="hmH">Team A</b> goals, columns = <b id="hmA">Team B</b> goals.
+        Brighter = more likely. Blue cells favour A, orange favour B, grey are draws.</div>
+    </div>
+  </section>
+
+  <!-- ============================================ TOURNAMENT ============= -->
+  <section id="tab-tourn" class="hidden">
+    <div class="panel">
+      <h2 class="sec">Monte Carlo tournament simulation</h2>
+      <div class="row" style="align-items:flex-end">
+        <div style="flex:0 0 auto">
+          <label class="f">Simulations</label>
+          <select id="nSims" style="width:auto">
+            <option>2000</option><option selected>5000</option><option>10000</option><option>20000</option>
+          </select>
+        </div>
+        <div style="flex:0 0 auto"><button class="btn" id="simBtn">🎲 Run simulation</button></div>
+        <div style="flex:0 0 auto"><button class="btn alt" id="expTourn" disabled>⬇ Export CSV</button></div>
+        <div style="flex:1;color:var(--mut);font-size:13px" id="simStatus">
+          Simulates all 104 group games + the knockout bracket, sampling every score from the Poisson model.
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="panel">
+        <h2 class="sec">🏆 Championship odds</h2>
+        <div id="winners"><div class="note">Run a simulation to see title odds.</div></div>
+      </div>
+      <div class="panel">
+        <h2 class="sec">Stage-reach probabilities</h2>
+        <div style="overflow:auto;max-height:520px">
+          <table id="stageTbl"><thead><tr>
+            <th>Team</th><th class="num">Win</th><th class="num">Final</th>
+            <th class="num">Semi</th><th class="num">QF</th><th class="num">R16</th><th class="num">Adv.</th>
+          </tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h2 class="sec">Groups</h2>
+      <div class="groups" id="groupsBox"></div>
+    </div>
+  </section>
+
+  <!-- ============================================ RATINGS =============== -->
+  <section id="tab-ratings" class="hidden">
+    <div class="panel">
+      <h2 class="sec">Team strength ratings (click a header to sort)</h2>
+      <div class="exprow"><button class="btn alt" id="expRatings">⬇ Export CSV</button></div>
+      <div style="overflow:auto">
+        <table id="ratingsTbl"><thead><tr>
+          <th data-sort="rank" class="num">#</th>
+          <th data-sort="name">Team</th>
+          <th data-sort="elo" class="num">Elo</th>
+          <th data-sort="attIdx" class="num">Attack</th>
+          <th data-sort="defIdx" class="num">Defence</th>
+          <th data-sort="xgFor" class="num">xG for</th>
+          <th data-sort="xgAg" class="num">xG ag.</th>
+          <th data-sort="formPts">Form (last 10)</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+      <div class="note">Attack/Defence are multiplicative indices where 1.00 = an average team.
+        Attack 1.40 ⇒ scores 40% more than average; Defence 1.40 ⇒ concedes ~40% fewer.
+        xG for/ag. are expected goals against an average opponent on neutral ground.</div>
+    </div>
+  </section>
+
+  <!-- ============================================ ABOUT ================= -->
+  <section id="tab-about" class="hidden">
+    <div class="panel">
+      <h2 class="sec">How the model works</h2>
+      <div style="font-size:14px;line-height:1.7;color:var(--ink)">
+        <p><b>Data.</b> Built from <span id="aboutN"></span> international matches
+        (<span id="aboutRange"></span>) from the public
+        <a href="https://github.com/martj42/international_results">martj42/international_results</a> dataset —
+        every World Cup, qualifier, continental cup and friendly.</p>
+        <p><b>Team strength.</b> A weighted <b>Poisson attack/defence model</b> is fit by
+        ridge-regularised maximum likelihood: each team gets an attacking and a defensive rating, plus a
+        global home-advantage term. Recent matches are weighted far more heavily (2.5-year half-life) and
+        World-Cup-calibre games count for more than friendlies. An <b>Elo rating</b> is tracked in parallel
+        over the full history, weighted by match importance and margin of victory.</p>
+        <p><b>Match prediction.</b> Expected goals for each side give two Poisson distributions; their
+        product is the full grid of scoreline probabilities, which is summed into win/draw/loss,
+        most-likely scores, both-teams-to-score, over/under, etc.</p>
+        <p><b>Reactive in-game odds.</b> As the clock runs, only the <i>remaining</i> minutes carry
+        expected goals (scaled by time left). The current score is locked in and added to the simulated
+        remainder — so a 1-0 lead at the 80th minute correctly collapses the odds toward the leader.</p>
+        <p><b>Tournament odds.</b> A Monte Carlo engine plays the whole tournament thousands of times —
+        all 12 groups (top two plus the eight best third-placed teams advance) and the knockout bracket,
+        sampling every scoreline from the model and settling knockout draws by strength-weighted shootouts.</p>
+        <p class="note">Caveats: goals are modelled as independent Poisson (no explicit low-score
+        Dixon-Coles correction); the knockout bracket is seeded by group performance rather than the exact
+        official slotting; squad news, injuries and red cards aren’t modelled. It’s a solid statistical
+        baseline, not a betting guarantee.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Built from open data · model fit locally · runs entirely in your browser, offline.<br>
+    Not affiliated with FIFA. For entertainment & educational use.
+  </footer>
+</div>
+
+<script>
+const MODEL = {"meta": {"built": "2026-06-16", "matches": 49417, "fitMatches": 11003, "dataRange": ["1872-11-30", "2026-06-14"], "source": "martj42/international_results"}, "params": {"mu": 0.19625898498855343, "homeAdv": 0.34027486035012905, "globalAvg": 1.2168420083426825}, "hosts": ["Canada", "Mexico", "United States"], "groups": {"A": ["Mexico", "South Africa", "South Korea", "Czechia"], "B": ["Canada", "Bosnia and Herzegovina", "Qatar", "Switzerland"], "C": ["Brazil", "Morocco", "Haiti", "Scotland"], "D": ["United States", "Australia", "Paraguay", "Türkiye"], "E": ["Germany", "Curaçao", "Ivory Coast", "Ecuador"], "F": ["Netherlands", "Japan", "Sweden", "Tunisia"], "G": ["Belgium", "Egypt", "Iran", "New Zealand"], "H": ["Spain", "Cape Verde", "Saudi Arabia", "Uruguay"], "I": ["France", "Senegal", "Iraq", "Norway"], "J": ["Argentina", "Algeria", "Austria", "Jordan"], "K": ["Portugal", "DR Congo", "Uzbekistan", "Colombia"], "L": ["England", "Croatia", "Ghana", "Panama"]}, "teams": {"Mexico": {"name": "Mexico", "elo": 1842.7, "att": 0.0481, "dfn": 0.0928, "attIdx": 1.049, "defIdx": 1.097, "xgFor": 1.28, "xgAg": 1.11, "form": ["L", "W", "W", "W", "D", "D", "W", "W", "W", "W"], "formPts": 23, "rank": 12}, "South Africa": {"name": "South Africa", "elo": 1635.2, "att": -0.0117, "dfn": 0.0695, "attIdx": 0.988, "defIdx": 1.072, "xgFor": 1.2, "xgAg": 1.14, "form": ["W", "W", "L", "W", "L", "D", "L", "D", "W", "L"], "formPts": 14, "rank": 42}, "South Korea": {"name": "South Korea", "elo": 1808.4, "att": 0.0733, "dfn": 0.0644, "attIdx": 1.076, "defIdx": 1.066, "xgFor": 1.31, "xgAg": 1.14, "form": ["D", "L", "W", "W", "W", "L", "L", "W", "W", "W"], "formPts": 19, "rank": 17}, "Czechia": {"name": "Czechia", "elo": 1683.0, "att": 0.0482, "dfn": 0.025, "attIdx": 1.049, "defIdx": 1.025, "xgFor": 1.28, "xgAg": 1.19, "form": ["D", "D", "L", "W", "W", "D", "D", "W", "W", "L"], "formPts": 16, "rank": 35}, "Canada": {"name": "Canada", "elo": 1753.8, "att": 0.0512, "dfn": 0.0713, "attIdx": 1.053, "defIdx": 1.074, "xgFor": 1.28, "xgAg": 1.13, "form": ["W", "L", "D", "D", "W", "D", "D", "W", "D", "D"], "formPts": 15, "rank": 24}, "Bosnia and Herzegovina": {"name": "Bosnia and Herzegovina", "elo": 1573.2, "att": -0.0257, "dfn": 0.003, "attIdx": 0.975, "defIdx": 1.003, "xgFor": 1.19, "xgAg": 1.21, "form": ["L", "D", "W", "W", "D", "D", "D", "D", "D", "D"], "formPts": 13, "rank": 47}, "Qatar": {"name": "Qatar", "elo": 1618.7, "att": 0.0049, "dfn": -0.008, "attIdx": 1.005, "defIdx": 0.992, "xgFor": 1.22, "xgAg": 1.23, "form": ["L", "D", "W", "L", "L", "D", "L", "L", "D", "D"], "formPts": 7, "rank": 45}, "Switzerland": {"name": "Switzerland", "elo": 1791.0, "att": 0.0644, "dfn": 0.0456, "attIdx": 1.066, "defIdx": 1.047, "xgFor": 1.3, "xgAg": 1.16, "form": ["W", "W", "D", "W", "D", "L", "D", "W", "D", "D"], "formPts": 17, "rank": 20}, "Brazil": {"name": "Brazil", "elo": 1943.0, "att": 0.0856, "dfn": 0.0835, "attIdx": 1.089, "defIdx": 1.087, "xgFor": 1.33, "xgAg": 1.12, "form": ["L", "W", "L", "W", "D", "L", "W", "W", "W", "D"], "formPts": 17, "rank": 4}, "Morocco": {"name": "Morocco", "elo": 1841.0, "att": 0.099, "dfn": 0.1512, "attIdx": 1.104, "defIdx": 1.163, "xgFor": 1.34, "xgAg": 1.05, "form": ["W", "W", "D", "W", "D", "W", "W", "W", "D", "D"], "formPts": 22, "rank": 13}, "Haiti": {"name": "Haiti", "elo": 1632.7, "att": 0.1062, "dfn": 0.0251, "attIdx": 1.112, "defIdx": 1.025, "xgFor": 1.35, "xgAg": 1.19, "form": ["D", "W", "L", "W", "W", "L", "D", "W", "L", "L"], "formPts": 14, "rank": 43}, "Scotland": {"name": "Scotland", "elo": 1692.0, "att": 0.0157, "dfn": 0.0244, "attIdx": 1.016, "defIdx": 1.025, "xgFor": 1.24, "xgAg": 1.19, "form": ["W", "W", "W", "L", "W", "L", "L", "W", "W", "W"], "formPts": 21, "rank": 33}, "United States": {"name": "United States", "elo": 1783.9, "att": 0.0592, "dfn": 0.0415, "attIdx": 1.061, "defIdx": 1.042, "xgFor": 1.29, "xgAg": 1.17, "form": ["W", "D", "W", "W", "W", "L", "L", "W", "L", "W"], "formPts": 19, "rank": 22}, "Australia": {"name": "Australia", "elo": 1807.8, "att": 0.0624, "dfn": 0.0832, "attIdx": 1.064, "defIdx": 1.087, "xgFor": 1.3, "xgAg": 1.12, "form": ["W", "W", "L", "L", "L", "W", "W", "L", "D", "W"], "formPts": 16, "rank": 18}, "Paraguay": {"name": "Paraguay", "elo": 1688.3, "att": -0.0409, "dfn": 0.0314, "attIdx": 0.96, "defIdx": 1.032, "xgFor": 1.17, "xgAg": 1.18, "form": ["D", "W", "D", "L", "L", "W", "W", "L", "W", "L"], "formPts": 14, "rank": 34}, "Türkiye": {"name": "Türkiye", "elo": 1739.8, "att": 0.0623, "dfn": 0.0215, "attIdx": 1.064, "defIdx": 1.022, "xgFor": 1.3, "xgAg": 1.19, "form": ["L", "W", "W", "W", "D", "W", "W", "W", "W", "L"], "formPts": 22, "rank": 27}, "Germany": {"name": "Germany", "elo": 1887.2, "att": 0.1417, "dfn": 0.0449, "attIdx": 1.152, "defIdx": 1.046, "xgFor": 1.4, "xgAg": 1.16, "form": ["W", "W", "W", "W", "W", "W", "W", "W", "W", "W"], "formPts": 30, "rank": 8}, "Curaçao": {"name": "Curaçao", "elo": 1534.7, "att": 0.0461, "dfn": -0.0045, "attIdx": 1.047, "defIdx": 0.996, "xgFor": 1.27, "xgAg": 1.22, "form": ["W", "W", "D", "W", "D", "L", "L", "L", "W", "L"], "formPts": 14, "rank": 48}, "Ivory Coast": {"name": "Ivory Coast", "elo": 1750.5, "att": 0.0575, "dfn": 0.0947, "attIdx": 1.059, "defIdx": 1.099, "xgFor": 1.29, "xgAg": 1.11, "form": ["W", "W", "D", "W", "W", "L", "W", "W", "W", "W"], "formPts": 25, "rank": 25}, "Ecuador": {"name": "Ecuador", "elo": 1786.6, "att": -0.0221, "dfn": 0.0903, "attIdx": 0.978, "defIdx": 1.094, "xgFor": 1.19, "xgAg": 1.11, "form": ["W", "D", "D", "D", "W", "D", "D", "W", "W", "L"], "formPts": 17, "rank": 21}, "Netherlands": {"name": "Netherlands", "elo": 1889.7, "att": 0.1303, "dfn": 0.058, "attIdx": 1.139, "defIdx": 1.06, "xgFor": 1.39, "xgAg": 1.15, "form": ["W", "W", "W", "D", "W", "W", "D", "L", "W", "D"], "formPts": 21, "rank": 7}, "Japan": {"name": "Japan", "elo": 1860.8, "att": 0.1461, "dfn": 0.0903, "attIdx": 1.157, "defIdx": 1.095, "xgFor": 1.41, "xgAg": 1.11, "form": ["D", "L", "D", "W", "W", "W", "W", "W", "W", "D"], "formPts": 21, "rank": 10}, "Sweden": {"name": "Sweden", "elo": 1704.5, "att": 0.0588, "dfn": 0.0118, "attIdx": 1.061, "defIdx": 1.012, "xgFor": 1.29, "xgAg": 1.2, "form": ["L", "L", "L", "L", "D", "W", "W", "L", "D", "W"], "formPts": 11, "rank": 32}, "Tunisia": {"name": "Tunisia", "elo": 1677.5, "att": 0.0127, "dfn": 0.075, "attIdx": 1.013, "defIdx": 1.078, "xgFor": 1.23, "xgAg": 1.13, "form": ["W", "W", "L", "D", "D", "W", "D", "L", "L", "L"], "formPts": 12, "rank": 38}, "Belgium": {"name": "Belgium", "elo": 1850.3, "att": 0.1373, "dfn": 0.0755, "attIdx": 1.147, "defIdx": 1.078, "xgFor": 1.4, "xgAg": 1.13, "form": ["W", "W", "D", "W", "D", "W", "W", "D", "W", "W"], "formPts": 24, "rank": 11}, "Egypt": {"name": "Egypt", "elo": 1735.6, "att": 0.0227, "dfn": 0.1003, "attIdx": 1.023, "defIdx": 1.106, "xgFor": 1.24, "xgAg": 1.1, "form": ["W", "D", "W", "W", "L", "D", "W", "D", "W", "L"], "formPts": 18, "rank": 28}, "Iran": {"name": "Iran", "elo": 1825.4, "att": 0.0973, "dfn": 0.0824, "attIdx": 1.102, "defIdx": 1.086, "xgFor": 1.34, "xgAg": 1.12, "form": ["L", "W", "L", "W", "D", "D", "L", "W", "W", "W"], "formPts": 17, "rank": 16}, "New Zealand": {"name": "New Zealand", "elo": 1674.0, "att": 0.0523, "dfn": 0.0291, "attIdx": 1.054, "defIdx": 1.03, "xgFor": 1.28, "xgAg": 1.18, "form": ["L", "L", "L", "D", "L", "L", "L", "W", "L", "L"], "formPts": 4, "rank": 39}, "Spain": {"name": "Spain", "elo": 2003.0, "att": 0.1614, "dfn": 0.0926, "attIdx": 1.175, "defIdx": 1.097, "xgFor": 1.43, "xgAg": 1.11, "form": ["W", "W", "W", "W", "W", "D", "W", "D", "D", "W"], "formPts": 24, "rank": 1}, "Cape Verde": {"name": "Cape Verde", "elo": 1584.9, "att": -0.0067, "dfn": 0.0443, "attIdx": 0.993, "defIdx": 1.045, "xgFor": 1.21, "xgAg": 1.16, "form": ["W", "W", "D", "W", "D", "D", "L", "D", "W", "L"], "formPts": 16, "rank": 46}, "Saudi Arabia": {"name": "Saudi Arabia", "elo": 1654.6, "att": -0.0218, "dfn": 0.0596, "attIdx": 0.978, "defIdx": 1.061, "xgFor": 1.19, "xgAg": 1.15, "form": ["W", "W", "L", "W", "L", "L", "L", "L", "W", "D"], "formPts": 13, "rank": 40}, "Uruguay": {"name": "Uruguay", "elo": 1834.7, "att": 0.0001, "dfn": 0.0849, "attIdx": 1.0, "defIdx": 1.089, "xgFor": 1.22, "xgAg": 1.12, "form": ["L", "W", "W", "D", "W", "W", "D", "L", "D", "D"], "formPts": 16, "rank": 14}, "France": {"name": "France", "elo": 1955.7, "att": 0.1126, "dfn": 0.0736, "attIdx": 1.119, "defIdx": 1.076, "xgFor": 1.36, "xgAg": 1.13, "form": ["W", "W", "W", "D", "W", "W", "W", "W", "L", "W"], "formPts": 25, "rank": 3}, "Senegal": {"name": "Senegal", "elo": 1807.7, "att": 0.089, "dfn": 0.1133, "attIdx": 1.093, "defIdx": 1.12, "xgFor": 1.33, "xgAg": 1.09, "form": ["D", "W", "W", "W", "W", "L", "W", "W", "L", "D"], "formPts": 20, "rank": 19}, "Iraq": {"name": "Iraq", "elo": 1679.3, "att": -0.0052, "dfn": 0.069, "attIdx": 0.995, "defIdx": 1.071, "xgFor": 1.21, "xgAg": 1.14, "form": ["D", "W", "W", "W", "L", "L", "W", "W", "D", "L"], "formPts": 17, "rank": 36}, "Norway": {"name": "Norway", "elo": 1741.1, "att": 0.1023, "dfn": 0.0533, "attIdx": 1.108, "defIdx": 1.055, "xgFor": 1.35, "xgAg": 1.15, "form": ["W", "W", "W", "D", "W", "W", "L", "D", "W", "D"], "formPts": 21, "rank": 26}, "Argentina": {"name": "Argentina", "elo": 1985.6, "att": 0.112, "dfn": 0.1231, "attIdx": 1.119, "defIdx": 1.131, "xgFor": 1.36, "xgAg": 1.08, "form": ["D", "W", "L", "W", "W", "W", "W", "W", "W", "W"], "formPts": 25, "rank": 2}, "Algeria": {"name": "Algeria", "elo": 1774.5, "att": 0.138, "dfn": 0.1006, "attIdx": 1.148, "defIdx": 1.106, "xgFor": 1.4, "xgAg": 1.1, "form": ["D", "W", "W", "W", "W", "L", "W", "D", "W", "W"], "formPts": 23, "rank": 23}, "Austria": {"name": "Austria", "elo": 1727.4, "att": 0.0659, "dfn": 0.0645, "attIdx": 1.068, "defIdx": 1.067, "xgFor": 1.3, "xgAg": 1.14, "form": ["W", "W", "W", "W", "L", "W", "D", "W", "W", "W"], "formPts": 25, "rank": 31}, "Jordan": {"name": "Jordan", "elo": 1679.1, "att": 0.0486, "dfn": 0.0291, "attIdx": 1.05, "defIdx": 1.03, "xgFor": 1.28, "xgAg": 1.18, "form": ["W", "W", "W", "W", "W", "L", "D", "D", "L", "L"], "formPts": 17, "rank": 37}, "Portugal": {"name": "Portugal", "elo": 1907.0, "att": 0.1414, "dfn": 0.0889, "attIdx": 1.152, "defIdx": 1.093, "xgFor": 1.4, "xgAg": 1.11, "form": ["W", "W", "W", "D", "L", "W", "D", "W", "W", "W"], "formPts": 23, "rank": 6}, "DR Congo": {"name": "DR Congo", "elo": 1652.3, "att": -0.0109, "dfn": 0.0881, "attIdx": 0.989, "defIdx": 1.092, "xgFor": 1.2, "xgAg": 1.11, "form": ["W", "D", "W", "D", "W", "L", "W", "W", "D", "L"], "formPts": 18, "rank": 41}, "Uzbekistan": {"name": "Uzbekistan", "elo": 1732.1, "att": 0.0222, "dfn": 0.0703, "attIdx": 1.022, "defIdx": 1.073, "xgFor": 1.24, "xgAg": 1.13, "form": ["W", "W", "L", "W", "D", "D", "W", "D", "L", "L"], "formPts": 15, "rank": 30}, "Colombia": {"name": "Colombia", "elo": 1878.7, "att": 0.0574, "dfn": 0.0709, "attIdx": 1.059, "defIdx": 1.073, "xgFor": 1.29, "xgAg": 1.13, "form": ["W", "W", "W", "D", "W", "W", "L", "L", "W", "W"], "formPts": 22, "rank": 9}, "England": {"name": "England", "elo": 1916.0, "att": 0.1075, "dfn": 0.1153, "attIdx": 1.113, "defIdx": 1.122, "xgFor": 1.35, "xgAg": 1.08, "form": ["W", "W", "W", "W", "W", "W", "D", "L", "W", "W"], "formPts": 25, "rank": 5}, "Croatia": {"name": "Croatia", "elo": 1830.6, "att": 0.0614, "dfn": 0.0562, "attIdx": 1.063, "defIdx": 1.058, "xgFor": 1.29, "xgAg": 1.15, "form": ["W", "W", "D", "W", "W", "W", "W", "L", "L", "W"], "formPts": 22, "rank": 15}, "Ghana": {"name": "Ghana", "elo": 1623.1, "att": -0.0017, "dfn": 0.0287, "attIdx": 0.998, "defIdx": 1.029, "xgFor": 1.21, "xgAg": 1.18, "form": ["D", "W", "W", "W", "L", "L", "L", "L", "L", "D"], "formPts": 11, "rank": 44}, "Panama": {"name": "Panama", "elo": 1735.5, "att": 0.0461, "dfn": 0.0216, "attIdx": 1.047, "defIdx": 1.022, "xgFor": 1.27, "xgAg": 1.19, "form": ["D", "W", "W", "D", "L", "D", "W", "L", "W", "D"], "formPts": 16, "rank": 29}}};
+
+/* ---------------------------------------------------- math helpers */
+const fact=[1];for(let i=1;i<=25;i++)fact[i]=fact[i-1]*i;
+function pois(lam,k){return Math.exp(-lam)*Math.pow(lam,k)/fact[k];}
+function poisVec(lam,n){const v=[];let s=0;for(let k=0;k<n;k++){v[k]=pois(lam,k);s+=v[k];}
+  // dump remaining tail prob into last bucket
+  v[n-1]+=Math.max(0,1-s);return v;}
+
+/* ---------------------------------------------------- export helpers */
+function dl(filename,text,type){
+  const blob=new Blob([text],{type:type||"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function csvCell(v){v=v==null?"":String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function toCSV(rows){return rows.map(r=>r.map(csvCell).join(",")).join("\n");}
+
+const T=MODEL?MODEL.teams:{}, P=MODEL?MODEL.params:{};
+let lastAcc=null; // last tournament simulation result, for export
+function abbr(n){const m={"United States":"USA","South Korea":"KOR","South Africa":"RSA",
+  "Bosnia and Herzegovina":"BIH","Saudi Arabia":"KSA","New Zealand":"NZL","Ivory Coast":"CIV",
+  "DR Congo":"COD","Cape Verde":"CPV","Czechia":"CZE","Netherlands":"NED","Germany":"GER",
+  "Switzerland":"SUI","Uruguay":"URU","Croatia":"CRO","Portugal":"POR","Colombia":"COL",
+  "Argentina":"ARG","Brazil":"BRA","France":"FRA","Spain":"ESP","England":"ENG","Belgium":"BEL",
+  "Senegal":"SEN","Morocco":"MAR","Japan":"JPN","Mexico":"MEX","Canada":"CAN","Norway":"NOR"};
+  return m[n]||n.slice(0,3).toUpperCase();}
+
+/* full-match expected goals for a matchup */
+function lambdas(h,a,venue){
+  const th=T[h], ta=T[a], mu=P.mu, hadv=P.homeAdv;
+  const hh=venue==="home"?hadv:0, ha=venue==="away"?hadv:0;
+  const lh=Math.exp(mu+th.att-ta.dfn+hh);
+  const la=Math.exp(mu+ta.att-th.dfn+ha);
+  return [lh,la];
+}
+
+/* prediction given live state */
+function predict(h,a,venue,minute,ch,ca){
+  const [lhF,laF]=lambdas(h,a,venue);
+  const f=Math.max(0,(90-minute)/90);
+  const lh=lhF*f, la=laF*f;
+  const N=11;
+  const vh=poisVec(lh,N), va=poisVec(la,N);
+  let pH=0,pD=0,pA=0, btts=0, over=0, csH=0, csA=0;
+  const grid=[]; // grid[i][j] prob remaining i,j  -> final (ch+i, ca+j)
+  let best={p:-1,i:0,j:0};
+  for(let i=0;i<N;i++){grid[i]=[];for(let j=0;j<N;j++){
+    const p=vh[i]*va[j]; grid[i][j]=p;
+    const fh=ch+i, fa=ca+j;
+    if(fh>fa)pH+=p; else if(fh===fa)pD+=p; else pA+=p;
+    if(fh>0&&fa>0)btts+=p;
+    if(fh+fa>2.5)over+=p;
+    if(fa===0)csH+=p; if(fh===0)csA+=p;
+    if(p>best.p)best={p,i,j};
+  }}
+  // top final scorelines
+  const flat=[];
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)flat.push({h:ch+i,a:ca+j,p:grid[i][j]});
+  flat.sort((x,y)=>y.p-x.p);
+  return {pH,pD,pA,btts,over,csH,csA,
+    expH:ch+lh, expA:ca+la, top:flat.slice(0,5), grid, ch, ca, live:minute>0};
+}
+
+/* ---------------------------------------------------- state + UI */
+const S={h:null,a:null,venue:"neutral",minute:0,ch:0,ca:0,playing:false,timer:null};
+
+function fillTeamSelects(){
+  const names=Object.keys(T).sort();
+  const oh=document.getElementById("teamH"), oa=document.getElementById("teamA");
+  for(const n of names){
+    oh.add(new Option(n,n)); oa.add(new Option(n,n));
+  }
+  // default to a marquee matchup
+  oh.value = T["Argentina"]?"Argentina":names[0];
+  oa.value = T["France"]?"France":names[1];
+}
+
+function setVenueDefault(){
+  const hosts=new Set(MODEL.hosts||[]);
+  const v=document.getElementById("venue");
+  if(hosts.has(S.h)) v.value="home";
+  else if(hosts.has(S.a)) v.value="away";
+  else v.value="neutral";
+  S.venue=v.value;
+}
+
+function readControls(){
+  S.h=document.getElementById("teamH").value;
+  S.a=document.getElementById("teamA").value;
+  S.venue=document.getElementById("venue").value;
+}
+
+function renderLive(){
+  if(!S.h||!S.a) return;
+  const r=predict(S.h,S.a,S.venue,S.minute,S.ch,S.ca);
+  // scoreboard
+  document.getElementById("nmH").textContent=S.h;
+  document.getElementById("nmA").textContent=S.a;
+  document.getElementById("elH").textContent="Elo "+Math.round(T[S.h].elo);
+  document.getElementById("elA").textContent="Elo "+Math.round(T[S.a].elo);
+  document.getElementById("scH").textContent=S.ch;
+  document.getElementById("scA").textContent=S.ca;
+  document.getElementById("stH").textContent=S.ch;
+  document.getElementById("stA").textContent=S.ca;
+  document.getElementById("minute").value=S.minute;
+  document.getElementById("minLbl").textContent=S.minute;
+  const clock=document.getElementById("clock");
+  if(S.minute===0)clock.textContent="Pre-match · 0'";
+  else if(S.minute>=90)clock.textContent="Full time · 90'";
+  else clock.textContent=S.minute+"'";
+  clock.classList.toggle("live",S.playing);
+  document.getElementById("liveTag").classList.toggle("hidden",!(S.minute>0&&S.minute<90));
+  document.getElementById("lblH").textContent=S.h;
+  document.getElementById("lblA").textContent=S.a;
+  // odds bar
+  const pct=x=>(x*100);
+  const obH=document.getElementById("obH"),obD=document.getElementById("obD"),obA=document.getElementById("obA");
+  obH.style.width=pct(r.pH)+"%"; obD.style.width=pct(r.pD)+"%"; obA.style.width=pct(r.pA)+"%";
+  obH.textContent=r.pH>=.06?Math.round(pct(r.pH))+"%":"";
+  obD.textContent=r.pD>=.06?Math.round(pct(r.pD))+"%":"";
+  obA.textContent=r.pA>=.06?Math.round(pct(r.pA))+"%":"";
+  // chips
+  document.getElementById("cExp").textContent=r.expH.toFixed(1)+" : "+r.expA.toFixed(1);
+  document.getElementById("cTot").textContent=(r.expH+r.expA).toFixed(2);
+  document.getElementById("cBtts").textContent=Math.round(r.btts*100)+"%";
+  document.getElementById("cOver").textContent=Math.round(r.over*100)+"%";
+  // top scores
+  const ul=document.getElementById("topScores");ul.innerHTML="";
+  const mx=r.top[0].p||1;
+  for(const s of r.top){
+    const li=document.createElement("li");
+    li.innerHTML=`<span class="ln">${s.h}–${s.a}</span>
+      <span class="barwrap"><span class="bar" style="width:${(s.p/mx*100).toFixed(0)}%"></span></span>
+      <span class="pc">${(s.p*100).toFixed(1)}%</span>`;
+    ul.appendChild(li);
+  }
+  renderHeat(r);
+}
+
+function renderHeat(r){
+  const box=document.getElementById("heat");
+  const maxG=6; // show 0..6
+  document.getElementById("hmH").textContent=S.h;
+  document.getElementById("hmA").textContent=S.a;
+  box.style.gridTemplateColumns=`28px repeat(${maxG+1},1fr)`;
+  let html=`<div class="lbl"></div>`;
+  for(let j=0;j<=maxG;j++)html+=`<div class="lbl">${j}</div>`;
+  // recompute grid over absolute final scores 0..maxG
+  let peak=0;const cells=[];
+  for(let i=0;i<=maxG;i++){cells[i]=[];for(let j=0;j<=maxG;j++){
+    // prob final = (i,j): needs remaining (i-ch, j-ca)
+    const ri=i-r.ch, rj=j-r.ca;
+    let p=0;
+    if(ri>=0&&rj>=0&&ri<r.grid.length&&rj<r.grid.length)p=r.grid[ri][rj];
+    cells[i][j]=p; if(p>peak)peak=p;
+  }}
+  for(let i=0;i<=maxG;i++){
+    html+=`<div class="lbl">${i}</div>`;
+    for(let j=0;j<=maxG;j++){
+      const p=cells[i][j], t=peak?p/peak:0;
+      let base = i>j?"91,140,255" : (i<j?"255,138,91":"154,166,198");
+      const bg=`rgba(${base},${(.10+t*.9).toFixed(3)})`;
+      html+=`<div class="cell" style="background:${bg}" title="${i}–${j}: ${(p*100).toFixed(1)}%">${p>=.02?(p*100).toFixed(0):""}</div>`;
+    }
+  }
+  box.innerHTML=html;
+}
+
+/* live simulation */
+function stepClock(){
+  if(S.minute>=90){stopPlay();return;}
+  S.minute++;
+  const [lhF,laF]=lambdas(S.h,S.a,S.venue);
+  if(Math.random()<lhF/90)S.ch++;
+  if(Math.random()<laF/90)S.ca++;
+  renderLive();
+}
+function startPlay(){
+  if(S.minute>=90)resetMatch(false);
+  S.playing=true;document.getElementById("playBtn").textContent="⏸ Pause";
+  S.timer=setInterval(stepClock,120);
+}
+function stopPlay(){
+  S.playing=false;document.getElementById("playBtn").textContent="▶ Simulate live";
+  if(S.timer)clearInterval(S.timer);S.timer=null;renderLive();
+}
+function resetMatch(render=true){
+  stopPlay();S.minute=0;S.ch=0;S.ca=0;if(render)renderLive();
+}
+
+/* ---------------------------------------------------- tournament sim */
+function sampleScore(h,a,hostH,hostA){
+  // neutral-ish; hosts get half home advantage
+  const mu=P.mu,hadv=P.homeAdv;
+  const lh=Math.exp(mu+T[h].att-T[a].dfn+(hostH?hadv*0.5:0));
+  const la=Math.exp(mu+T[a].att-T[h].dfn+(hostA?hadv*0.5:0));
+  return [poisSample(lh),poisSample(la)];
+}
+function poisSample(lam){ // Knuth
+  const L=Math.exp(-lam);let k=0,p=1;
+  do{k++;p*=Math.random();}while(p>L);return k-1;
+}
+function shootoutWinner(h,a){ // strength-weighted coin flip
+  const d=(T[h].elo-T[a].elo)/400;
+  const ph=1/(1+Math.pow(10,-d));
+  return Math.random()<ph?h:a;
+}
+function knockout(h,a,hostH,hostA){
+  const [sh,sa]=sampleScore(h,a,hostH,hostA);
+  if(sh>sa)return h; if(sa>sh)return a;
+  return shootoutWinner(h,a);
+}
+function runTournament(){
+  const hosts=new Set(MODEL.hosts||[]);
+  const isHost=t=>hosts.has(t);
+  const firsts=[],seconds=[],thirds=[];
+  for(const g of Object.keys(MODEL.groups)){
+    const teams=MODEL.groups[g];
+    const st={};teams.forEach(t=>st[t]={p:0,gd:0,gf:0,r:Math.random()});
+    for(let i=0;i<teams.length;i++)for(let j=i+1;j<teams.length;j++){
+      const A=teams[i],B=teams[j];
+      const [sa,sb]=sampleScore(A,B,isHost(A),isHost(B));
+      st[A].gf+=sa;st[B].gf+=sb;st[A].gd+=sa-sb;st[B].gd+=sb-sa;
+      if(sa>sb)st[A].p+=3;else if(sb>sa)st[B].p+=3;else{st[A].p++;st[B].p++;}
+    }
+    const ord=teams.slice().sort((x,y)=>st[y].p-st[x].p||st[y].gd-st[x].gd||st[y].gf-st[x].gf||st[y].r-st[x].r);
+    firsts.push(ord[0]);seconds.push(ord[1]);
+    thirds.push({t:ord[2],p:st[ord[2]].p,gd:st[ord[2]].gd,gf:st[ord[2]].gf,r:Math.random()});
+  }
+  // best 8 thirds
+  thirds.sort((x,y)=>y.p-x.p||y.gd-x.gd||y.gf-x.gf||y.r-x.r);
+  const bestThirds=thirds.slice(0,8).map(x=>x.t);
+  const advanced=new Set([...firsts,...seconds,...bestThirds]);
+  // seed: firsts (by elo) then seconds then thirds -> 32, standard bracket 1v32...
+  const seedFirsts=firsts.slice().sort((a,b)=>T[b].elo-T[a].elo);
+  const seedSeconds=seconds.slice().sort((a,b)=>T[b].elo-T[a].elo);
+  const seedThirds=bestThirds.slice().sort((a,b)=>T[b].elo-T[a].elo);
+  const bracket=[...seedFirsts,...seedSeconds,...seedThirds]; // 32 qualifiers
+  function roundPairs(arr){const o=[];for(let i=0;i<arr.length/2;i++)o.push([arr[i],arr[arr.length-1-i]]);return o;}
+  // staged single-elimination sim. Each set = teams that REACHED that round.
+  let stage=bracket.slice(); // 32 in the Round of 32
+  const reached={R16:new Set(),QF:new Set(),SF:new Set(),F:new Set()};
+  const advance=()=>{const nx=[];for(const[x,y]of roundPairs(stage))nx.push(knockout(x,y,isHost(x),isHost(y)));stage=nx;};
+  advance(); stage.forEach(t=>reached.R16.add(t)); // R32 winners -> Round of 16 (16)
+  advance(); stage.forEach(t=>reached.QF.add(t));  // R16 winners -> Quarterfinals (8)
+  advance(); stage.forEach(t=>reached.SF.add(t));  // QF winners  -> Semifinals (4)
+  advance(); stage.forEach(t=>reached.F.add(t));   // SF winners  -> Final (2)
+  const finalists=stage.slice();
+  const champ=knockout(finalists[0],finalists[1],isHost(finalists[0]),isHost(finalists[1]));
+  return {advanced:[...advanced],reached,finalists,champ};
+}
+
+function simulate(n){
+  const acc={};for(const t of Object.keys(T))acc[t]={champ:0,fin:0,sf:0,qf:0,r16:0,adv:0};
+  for(let s=0;s<n;s++){
+    const r=runTournament();
+    r.advanced.forEach(t=>acc[t].adv++);
+    r.reached.R16.forEach(t=>acc[t].r16++);
+    r.reached.QF.forEach(t=>acc[t].qf++);
+    r.reached.SF.forEach(t=>acc[t].sf++);
+    r.reached.F.forEach(t=>acc[t].fin++);
+    acc[r.champ].champ++;
+  }
+  for(const t in acc)for(const k in acc[t])acc[t][k]/=n;
+  return acc;
+}
+
+function renderTournament(acc){
+  lastAcc=acc;
+  document.getElementById("expTourn").disabled=false;
+  const teams=Object.keys(T).sort((a,b)=>acc[b].champ-acc[a].champ);
+  // winners
+  const wbox=document.getElementById("winners");wbox.innerHTML="";
+  const mx=acc[teams[0]].champ||1;
+  for(const t of teams.slice(0,16)){
+    const p=acc[t].champ;if(p<=0)continue;
+    const d=document.createElement("div");d.className="winrow";
+    d.innerHTML=`<span class="nm">${t}</span>
+      <span class="barwrap"><span class="bar" style="width:${(p/mx*100).toFixed(0)}%"></span></span>
+      <span class="pc">${(p*100).toFixed(1)}%</span>`;
+    wbox.appendChild(d);
+  }
+  // stage table
+  const tb=document.querySelector("#stageTbl tbody");tb.innerHTML="";
+  const f=x=>x>=.005?(x*100).toFixed(1)+"%":"·";
+  for(const t of teams){
+    const a=acc[t];if(a.adv<=0&&a.champ<=0){}
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${t}</td><td class="num">${f(a.champ)}</td><td class="num">${f(a.fin)}</td>
+      <td class="num">${f(a.sf)}</td><td class="num">${f(a.qf)}</td><td class="num">${f(a.r16)}</td>
+      <td class="num">${f(a.adv)}</td>`;
+    tb.appendChild(tr);
+  }
+}
+
+function renderGroups(){
+  const box=document.getElementById("groupsBox");box.innerHTML="";
+  for(const g of Object.keys(MODEL.groups)){
+    const teams=MODEL.groups[g].slice().sort((a,b)=>T[b].elo-T[a].elo);
+    const d=document.createElement("div");d.className="grp";
+    let h=`<h4>Group ${g}</h4>`;
+    for(const t of teams)h+=`<div class="gt"><b>${t}</b><span>Elo ${Math.round(T[t].elo)}</span></div>`;
+    d.innerHTML=h;box.appendChild(d);
+  }
+}
+
+/* ---------------------------------------------------- ratings table */
+let sortKey="elo",sortDir=-1;
+function renderRatings(){
+  const tb=document.querySelector("#ratingsTbl tbody");tb.innerHTML="";
+  const rows=Object.values(T).slice().sort((a,b)=>{
+    let x=a[sortKey],y=b[sortKey];
+    if(typeof x==="string")return sortDir*x.localeCompare(y);
+    return sortDir*(x-y);
+  });
+  const maxElo=Math.max(...rows.map(r=>r.elo)), minElo=Math.min(...rows.map(r=>r.elo));
+  for(const r of rows){
+    const formHtml=r.form.map(c=>`<span class="pip ${c}">${c}</span>`).join("");
+    const w=((r.elo-minElo)/(maxElo-minElo||1)*100).toFixed(0);
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="num">${r.rank}</td><td>${r.name}</td>
+      <td class="num barcell"><span class="b" style="width:${w}%"></span><span>${Math.round(r.elo)}</span></td>
+      <td class="num">${r.attIdx.toFixed(2)}</td><td class="num">${r.defIdx.toFixed(2)}</td>
+      <td class="num">${r.xgFor.toFixed(2)}</td><td class="num">${r.xgAg.toFixed(2)}</td>
+      <td><span class="form">${formHtml}</span></td>`;
+    tb.appendChild(tr);
+  }
+}
+
+/* ---------------------------------------------------- exporters */
+function exportLive(){
+  const r=predict(S.h,S.a,S.venue,S.minute,S.ch,S.ca);
+  const rows=[
+    ["World Cup 2026 — Match prediction"],
+    ["Model built",MODEL.meta.built],
+    ["Team A",S.h],["Team B",S.a],["Venue",S.venue],
+    ["Minute",S.minute],["Current score",S.ch+"-"+S.ca],
+    [],
+    ["Metric","Value"],
+    [S.h+" win %",(r.pH*100).toFixed(2)],
+    ["Draw %",(r.pD*100).toFixed(2)],
+    [S.a+" win %",(r.pA*100).toFixed(2)],
+    ["Expected goals "+S.h,r.expH.toFixed(3)],
+    ["Expected goals "+S.a,r.expA.toFixed(3)],
+    ["Expected total goals",(r.expH+r.expA).toFixed(3)],
+    ["Both teams to score %",(r.btts*100).toFixed(2)],
+    ["Over 2.5 goals %",(r.over*100).toFixed(2)],
+    [S.h+" clean sheet %",(r.csH*100).toFixed(2)],
+    [S.a+" clean sheet %",(r.csA*100).toFixed(2)],
+    [],
+    ["Most likely final scores"],["Score","Probability %"],
+    ...r.top.map(s=>[s.h+"-"+s.a,(s.p*100).toFixed(2)]),
+    [],
+    ["Final scoreline probability matrix (%)  rows="+S.h+"  cols="+S.a],
+  ];
+  const maxG=8, head=[""]; for(let j=0;j<=maxG;j++)head.push(j); rows.push(head);
+  for(let i=0;i<=maxG;i++){
+    const row=[i];
+    for(let j=0;j<=maxG;j++){
+      const ri=i-r.ch,rj=j-r.ca; let p=0;
+      if(ri>=0&&rj>=0&&ri<r.grid.length&&rj<r.grid.length)p=r.grid[ri][rj];
+      row.push((p*100).toFixed(2));
+    }
+    rows.push(row);
+  }
+  dl(`prediction_${abbr(S.h)}_vs_${abbr(S.a)}.csv`,toCSV(rows));
+}
+function exportRatings(){
+  const rows=[["Rank","Team","Elo","AttackIdx","DefenceIdx","xG_for","xG_against","FormPts_last10","Form"]];
+  Object.values(T).slice().sort((a,b)=>a.rank-b.rank)
+    .forEach(r=>rows.push([r.rank,r.name,r.elo,r.attIdx,r.defIdx,r.xgFor,r.xgAg,r.formPts,r.form.join("")]));
+  dl("wc2026_team_ratings.csv",toCSV(rows));
+}
+function exportTourn(){
+  if(!lastAcc)return;
+  const rows=[["Team","Champion_%","Final_%","Semifinal_%","Quarterfinal_%","Round16_%","Advance_%"]];
+  Object.keys(T).sort((a,b)=>lastAcc[b].champ-lastAcc[a].champ).forEach(t=>{
+    const a=lastAcc[t];
+    rows.push([t,(a.champ*100).toFixed(2),(a.fin*100).toFixed(2),(a.sf*100).toFixed(2),
+      (a.qf*100).toFixed(2),(a.r16*100).toFixed(2),(a.adv*100).toFixed(2)]);
+  });
+  dl("wc2026_tournament_odds.csv",toCSV(rows));
+}
+
+/* ---------------------------------------------------- wiring */
+function init(){
+  if(!MODEL){document.getElementById("metaBadge").textContent="model data missing";return;}
+  document.getElementById("metaBadge").textContent="built "+MODEL.meta.built;
+  document.getElementById("metaSub").textContent=
+    `Fit on ${MODEL.meta.fitMatches.toLocaleString()} recent matches · ${MODEL.meta.matches.toLocaleString()} total in dataset (${MODEL.meta.dataRange[0]} – ${MODEL.meta.dataRange[1]})`;
+  document.getElementById("aboutN").textContent=MODEL.meta.matches.toLocaleString();
+  document.getElementById("aboutRange").textContent=MODEL.meta.dataRange[0]+" – "+MODEL.meta.dataRange[1];
+
+  fillTeamSelects();
+  readControls();setVenueDefault();renderLive();
+  renderGroups();renderRatings();
+
+  // tabs
+  document.querySelectorAll(".tab").forEach(tab=>tab.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    for(const id of ["live","tourn","ratings","about"])
+      document.getElementById("tab-"+id).classList.toggle("hidden",id!==tab.dataset.tab);
+  });
+
+  // match controls
+  const onTeam=()=>{readControls();setVenueDefault();resetMatch();};
+  document.getElementById("teamH").onchange=onTeam;
+  document.getElementById("teamA").onchange=onTeam;
+  document.getElementById("venue").onchange=()=>{readControls();renderLive();};
+  document.getElementById("minute").oninput=e=>{stopPlay();S.minute=+e.target.value;renderLive();};
+  document.querySelectorAll(".stepper button").forEach(b=>b.onclick=()=>{
+    stopPlay();
+    const which=b.dataset.g, d=+b.dataset.d;
+    if(which==="H")S.ch=Math.max(0,S.ch+d); else S.ca=Math.max(0,S.ca+d);
+    if(S.minute===0&&(S.ch>0||S.ca>0))S.minute=1; // a goal implies the match started
+    renderLive();
+  });
+  document.getElementById("playBtn").onclick=()=>S.playing?stopPlay():startPlay();
+  document.getElementById("resetBtn").onclick=()=>resetMatch();
+
+  // export / print
+  document.getElementById("printBtn").onclick=()=>window.print();
+  document.getElementById("expLive").onclick=exportLive;
+  document.getElementById("expRatings").onclick=exportRatings;
+  document.getElementById("expTourn").onclick=exportTourn;
+
+  // tournament
+  document.getElementById("simBtn").onclick=()=>{
+    const btn=document.getElementById("simBtn");const n=+document.getElementById("nSims").value;
+    btn.disabled=true;btn.innerHTML='<span class="spin"></span> simulating…';
+    document.getElementById("simStatus").textContent=`Running ${n.toLocaleString()} tournaments…`;
+    setTimeout(()=>{
+      const t0=performance.now();
+      const acc=simulate(n);
+      renderTournament(acc);
+      const dt=((performance.now()-t0)/1000).toFixed(1);
+      btn.disabled=false;btn.innerHTML="🎲 Run simulation";
+      document.getElementById("simStatus").textContent=`${n.toLocaleString()} tournaments in ${dt}s. Re-run for a fresh sample.`;
+    },30);
+  };
+
+  // ratings sort
+  document.querySelectorAll("#ratingsTbl th").forEach(th=>th.onclick=()=>{
+    const k=th.dataset.sort;if(!k)return;
+    if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=(k==="name"||k==="rank")?1:-1;}
+    renderRatings();
+  });
+}
+init();
+</script>
+</body>
+</html>

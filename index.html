@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Max Nudelman, Data Analyst</title>
+<meta name="description" content="Business Information and Analytics senior at the University of Denver and former Fanatics Betting and Gaming risk trader. Projects in sports betting market analytics, SQL and Tableau.">
+
+<!-- Social preview (used when the link is pasted into LinkedIn, Slack, iMessage) -->
+<meta property="og:title" content="Max Nudelman, Data Analyst">
+<meta property="og:description" content="I worked the risk desk at Fanatics. Now I am doing that same work with data.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="nav-name" href="#top">Max Nudelman</a>
+    <div class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#experience">Experience</a>
+      <a href="#toolkit">Toolkit</a>
+      <a class="cta" href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ==================== HERO ==================== -->
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="status"><span class="dot"></span> Seeking data analyst roles &middot; June 2027 grad</span>
+      <h1>Max Nudelman</h1>
+      <p class="lede">
+        Last summer I worked the risk desk at <strong>Fanatics Betting and Gaming</strong>, where I
+        watched a feed of action from restricted accounts and used it to find lines that had gone
+        stale or prices that were just wrong. <strong>Now I am doing that same kind of work with
+        data</strong>, using SQL, Python, R and Tableau on real sportsbook markets.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#work">See the work</a>
+        <a class="btn" href="#contact">Get in touch</a>
+      </div>
+    </div>
+    <img class="hero-photo" src="assets/img/headshot.jpg" alt="Portrait of Max Nudelman">
+  </div>
+</header>
+
+<!-- ==================== WORK ==================== -->
+<section id="work">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Selected work</p>
+      <h2>Three projects, one question</h2>
+      <p>
+        Every project here comes back to the same question, which is where the betting market is
+        wrong and how you would know that it wasn't just luck. Each one links to a full writeup
+        with the method, the numbers, and the parts that didn't work out.
+      </p>
+    </div>
+
+    <div class="projects">
+
+      <!-- ---- Project 1: EPL odds ---- -->
+      <a class="card" href="projects/market-movement.html">
+        <div class="card-top">
+          <h3>Does the Market Know Something?</h3>
+          <span class="tag tag-progress">In progress</span>
+        </div>
+        <p class="kicker">Odds movement and bookmaker margin &middot; Premier League, 7 seasons</p>
+        <p class="summary">
+          I took seven seasons of English Premier League prices from 16 bookmakers, stripped out the
+          margin that every price has built into it, and tracked each one from the opening line to the
+          close. <strong>Selections whose price shortened before kickoff beat their opening implied
+          probability by 3.4 points, while the ones that drifted missed theirs by 5.0.</strong> The
+          same result shows up independently at Bet365, Pinnacle and the best available price, which
+          is the reason I think it's real.
+        </p>
+        <div class="stack"><span>R / tidyverse</span><span>Tableau</span><span>Devigging</span><span>football-data.co.uk</span></div>
+        <div class="metrics">
+          <div class="metric"><div class="num">2,660</div><div class="lab">matches</div></div>
+          <div class="metric"><div class="num">131,793</div><div class="lab">odds observations</div></div>
+          <div class="metric"><div class="num">16</div><div class="lab">bookmakers</div></div>
+          <div class="metric"><div class="num">+3.4pp</div><div class="lab">steamed-price edge</div></div>
+        </div>
+        <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
+      </a>
+
+      <!-- ---- Project 2: Stake Factor ---- -->
+      <a class="card" href="projects/stake-factor.html">
+        <div class="card-top">
+          <h3>Stake Factor</h3>
+          <span class="tag tag-progress">In progress</span>
+        </div>
+        <p class="kicker">Bettor segmentation and account risk policy &middot; 7 European leagues</p>
+        <p class="summary">
+          This is the question I was actually answering by hand at Fanatics, asked properly this time.
+          <strong>How many settled bets does it take to tell a sharp bettor from a lucky recreational
+          one, and what does it cost the book to act too early or too late?</strong> The market the
+          bettors bet into is real, the bettors themselves are simulated, and the output is a
+          continuous stake factor rather than a restrict or don't restrict label.
+        </p>
+        <div class="stack"><span>DuckDB / SQL</span><span>Python</span><span>Clustering</span><span>Simulation</span></div>
+        <div class="metrics">
+          <div class="metric"><div class="num">19,431</div><div class="lab">matches priced</div></div>
+          <div class="metric"><div class="num">2.7 to 5.7%</div><div class="lab">overround range</div></div>
+          <div class="metric"><div class="num">0</div><div class="lab">leagues beatable at close</div></div>
+        </div>
+        <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
+      </a>
+
+      <!-- ---- Project 3: World Cup ---- -->
+      <a class="card" href="projects/world-cup-2026.html">
+        <div class="card-top">
+          <h3>World Cup 2026 Model</h3>
+          <span class="tag tag-live">Live demo</span>
+        </div>
+        <p class="kicker">Elo and Poisson forecasting &middot; interactive dashboard</p>
+        <p class="summary">
+          I built a forecasting model for the 48 team 2026 World Cup from scratch, starting with
+          importance weighted Elo ratings fit over the full history of international results and
+          feeding those into a <strong>ridge regularised Poisson attack and defence model</strong>
+          that simulates every group and produces advancement odds. It runs as a self contained
+          interactive dashboard.
+        </p>
+        <div class="stack"><span>Python</span><span>Elo</span><span>Poisson MLE</span><span>Monte Carlo</span></div>
+        <div class="metrics">
+          <div class="metric"><div class="num">49,417</div><div class="lab">matches fit</div></div>
+          <div class="metric"><div class="num">48</div><div class="lab">teams modeled</div></div>
+          <div class="metric"><div class="num">0</div><div class="lab">external libraries</div></div>
+        </div>
+        <div class="card-foot"><span class="go">Read the write-up &rarr;</span></div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== EXPERIENCE ==================== -->
+<section id="experience">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Experience and education</p>
+      <h2>Where the instinct comes from</h2>
+    </div>
+
+    <div class="timeline">
+
+      <article class="entry">
+        <div class="when">June to August 2026</div>
+        <div>
+          <h3>Associate Risk Trader</h3>
+          <div class="org">Fanatics Betting and Gaming</div>
+          <ul>
+            <li>Worked off a desk fed from our database that surfaced action coming from restricted
+                accounts, and used that flow as a marker for lines that had likely gone stale or
+                prices that were wrong.</li>
+            <li>Took markets down when they were absorbing too much restricted action, held them
+                until I could verify whether the price was actually okay, and then adjusted and
+                reopened them.</li>
+            <li>Did a lot of customer management, including the account level decisions about who
+                got restricted and whose stake factor went up.</li>
+            <li>This is where most of the projects on this site come from. Watching a restricted
+                account get treated as a sensor rather than just a closed door is what made me want
+                to build the idea out properly with data.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="entry">
+        <div class="when">2023 to June 2027</div>
+        <div>
+          <h3>B.S. Business Administration, Business Information and Analytics</h3>
+          <div class="org">University of Denver, Daniels College of Business</div>
+          <ul>
+            <li>Minor in International Relations. GPA 3.78.</li>
+            <li>Coursework in database management, where I designed and built a normalized relational
+                database from a set of requirements, along with statistical modeling, data
+                visualization, and reproducible reporting in R and Quarto.</li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== TOOLKIT ==================== -->
+<section id="toolkit">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Toolkit</p>
+      <h2>What I work in</h2>
+      <p>Listed honestly, so the things I have actually shipped something with are separated in my head from the things I have only done for a class.</p>
+    </div>
+
+    <div class="skills">
+      <div class="skillset">
+        <h3>Data and query</h3>
+        <ul>
+          <li>SQL, including joins and window functions</li>
+          <li>DuckDB</li>
+          <li>Relational modeling and normalization</li>
+          <li>Excel (Advanced Certified)</li>
+        </ul>
+      </div>
+      <div class="skillset">
+        <h3>Analysis</h3>
+        <ul>
+          <li>Python (pandas, scikit-learn)</li>
+          <li>R (tidyverse, ggplot2)</li>
+          <li>Quarto</li>
+          <li>Clustering and simulation</li>
+        </ul>
+      </div>
+      <div class="skillset">
+        <h3>Visualization</h3>
+        <ul>
+          <li>Tableau &amp; Tableau Public</li>
+          <li>ggplot2</li>
+          <li>Adobe Creative Suite</li>
+        </ul>
+      </div>
+      <div class="skillset">
+        <h3>Domain</h3>
+        <ul>
+          <li>Sportsbook risk and trading</li>
+          <li>Odds devigging and calibration</li>
+          <li>Closing line value (CLV)</li>
+          <li>Account-level stake policy</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CONTACT ==================== -->
+<section id="contact">
+  <div class="wrap">
+    <div class="section-head prose">
+      <p class="eyebrow">Contact</p>
+      <h2>Let's talk</h2>
+      <p>
+        I'm looking for data analyst roles starting after I graduate in June 2027, ideally at a
+        sports betting, gaming or sports data company. I'm based in Denver and happy to relocate.
+        Email is the fastest way to reach me.
+      </p>
+    </div>
+
+    <div class="contact-grid">
+      <a class="contact-card" href="mailto:Max.Nudelman@du.edu">
+        <div class="lab">Email</div><div class="val">Max.Nudelman@du.edu</div>
+      </a>
+      <a class="contact-card" href="https://www.linkedin.com/in/max-nudelman" target="_blank" rel="noopener">
+        <div class="lab">LinkedIn</div><div class="val">in/max-nudelman</div>
+      </a>
+      <a class="contact-card" href="https://github.com/Max-Nudelman" target="_blank" rel="noopener">
+        <div class="lab">GitHub</div><div class="val">github.com/Max-Nudelman</div>
+      </a>
+      <a class="contact-card" href="https://public.tableau.com/app/profile/max.nudelman" target="_blank" rel="noopener">
+        <div class="lab">Tableau Public</div><div class="val">max.nudelman</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; 2026 Max Nudelman &middot; Denver, CO</span>
+    <span>Built from scratch, no template.</span>
+  </div>
+</footer>
+
+</body>
+</html>
