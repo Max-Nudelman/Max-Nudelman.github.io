@@ -17,37 +17,35 @@ resume/                     Put Max-Nudelman-Resume.pdf here
 .nojekyll                   Tells GitHub Pages to serve files as-is
 ```
 
-## Before you publish
-
-No `TODO`s left in the HTML. Contact details are all set:
+## Contact details
 
 | | |
 |---|---|
 | Email | `Max.Nudelman@du.edu` |
 | LinkedIn | `linkedin.com/in/max-nudelman` |
 | GitHub | `github.com/Max-Nudelman` |
-| Tableau Public | `public.tableau.com/app/profile/max.nudelman` |
 
-The only thing still missing is the resume PDF — see below.
+## The resume
 
-### Adding the resume back later
+The nav Resume button links to `resume/Max-Nudelman-Resume.pdf`, exported from
+`~/Desktop/Resume/Resume - Nudelman 2026.docx`.
 
-The Resume button was removed on purpose until the PDF is finalized — a 404 on that
-button is worse than not having one. To put it back, drop the file at
-`resume/Max-Nudelman-Resume.pdf`, then in the nav of `index.html` change:
+**When you update the resume, re-export it to that exact path and filename**, or the
+button will 404. From Word: File, then Save As, choose PDF, and overwrite the file in
+`resume/`.
 
-```html
-<a class="cta" href="#contact">Contact</a>
-```
-
-to:
+To take the button out again, in the nav of `index.html` replace:
 
 ```html
 <a href="#contact">Contact</a>
 <a class="cta" href="resume/Max-Nudelman-Resume.pdf">Resume</a>
 ```
 
-and do the same in each file in `projects/`, with `../` in front of both paths.
+with `<a class="cta" href="#contact">Contact</a>`, and do the same in each file under
+`projects/` with `../` in front of both paths.
+
+Note that below 620px the nav hides everything except the green pill, so on a phone the
+Resume button is the only nav item shown. That is deliberate.
 
 ## Editing it later
 
