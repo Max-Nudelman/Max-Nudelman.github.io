@@ -97,7 +97,18 @@ p  { margin: 0 0 1.1em; }
    HERO
    ============================================================ */
 .hero { padding: clamp(56px, 10vw, 110px) 0 clamp(48px, 8vw, 88px); border-bottom: 1px solid var(--line); }
-.hero-grid { display: grid; grid-template-columns: 1fr 240px; gap: 56px; align-items: start; }
+/* Two rows: the copy and the photo share row 1, the buttons sit below in row 2.
+   That lets the photo stretch to exactly the height of the copy block, ending
+   level with the last line of the paragraph, instead of leaving dead space. */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  grid-template-rows: auto auto;
+  column-gap: 56px;
+  align-items: stretch;
+}
+.hero-copy   { grid-column: 1; grid-row: 1; }
+.hero-actions{ grid-column: 1; grid-row: 2; }
 .hero h1 { margin-bottom: .35em; }
 .hero .lede {
   font-size: clamp(1.12rem, 2.2vw, 1.35rem);
@@ -107,7 +118,10 @@ p  { margin: 0 0 1.1em; }
 }
 .hero .lede strong { color: var(--text); font-weight: 600; }
 .hero-photo {
-  width: 240px; height: 350px; object-fit: cover; object-position: center 22%;
+  grid-column: 2; grid-row: 1;
+  width: 100%; height: 100%;
+  min-height: 300px;              /* floor, so a short copy block cannot squash it */
+  object-fit: cover; object-position: center 20%;
   border-radius: 10px; border: 1px solid var(--line); filter: saturate(.92);
 }
 .status {
@@ -288,8 +302,9 @@ tr td strong { color: var(--accent); }
    RESPONSIVE
    ============================================================ */
 @media (max-width: 860px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 34px; }
-  .hero-photo { width: 170px; height: 248px; order: -1; }
+  .hero-grid { grid-template-columns: 1fr; grid-template-rows: none; row-gap: 30px; }
+  .hero-copy, .hero-actions, .hero-photo { grid-column: 1; grid-row: auto; }
+  .hero-photo { width: 170px; height: 248px; min-height: 0; order: -1; }
   .entry { grid-template-columns: 1fr; gap: 10px; }
   .entry .when { padding-top: 0; }
 }
